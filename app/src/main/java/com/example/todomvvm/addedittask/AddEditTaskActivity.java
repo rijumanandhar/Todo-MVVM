@@ -1,6 +1,8 @@
-package com.example.todomvvm;
+package com.example.todomvvm.addedittask;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,7 +11,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
+import com.example.todomvvm.R;
+import com.example.todomvvm.database.AppDatabase;
+import com.example.todomvvm.database.Repository;
 import com.example.todomvvm.database.TaskEntry;
+
+import java.util.Date;
 
 public class AddEditTaskActivity extends AppCompatActivity {
 
@@ -32,9 +39,16 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
     private int mTaskId = DEFAULT_TASK_ID;
 
+    AppDatabase database;
+    Repository repository;
+    AddEditTaskViewModel viewModel;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_task);
+
+        database = AppDatabase.getInstance(getApplicationContext());
+        repository = new Repository(database);
 
         initViews();
 
@@ -43,11 +57,29 @@ public class AddEditTaskActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
+
         if (intent != null && intent.hasExtra(EXTRA_TASK_ID)) {
             mButton.setText(R.string.update_button);
+
             if (mTaskId == DEFAULT_TASK_ID) {
                 // populate the UI
+
+                mTaskId = intent.getIntExtra(EXTRA_TASK_ID, DEFAULT_TASK_ID);
+                AddEditTaskViewModelFactory factory = new AddEditTaskViewModelFactory(repository, mTaskId);
+                viewModel = ViewModelProviders.of(this, factory).get(AddEditTaskViewModel.class);
+
+                viewModel.getTask().observe(this, new Observer<TaskEntry>() {
+                    @Override
+                    public void onChanged(TaskEntry taskEntry) {
+                        viewModel.getTask().removeObserver(this);
+                        populateUI(taskEntry);
+                    }
+                });
+
             }
+        }else{
+            AddEditTaskViewModelFactory factory = new AddEditTaskViewModelFactory(repository, mTaskId);
+            viewModel = ViewModelProviders.of(this, factory).get(AddEditTaskViewModel.class);
         }
     }
 
@@ -79,6 +111,11 @@ public class AddEditTaskActivity extends AppCompatActivity {
      * @param task the taskEntry to populate the UI
      */
     private void populateUI(TaskEntry task) {
+        if(task == null){
+            return;
+        }
+        mEditText.setText(task.getDescription());
+        setPriorityInViews(task.getPriority());
 
     }
 
@@ -88,6 +125,19 @@ public class AddEditTaskActivity extends AppCompatActivity {
      */
     public void onSaveButtonClicked() {
         // Not yet implemented
+        String description = mEditText.getText().toString();
+        int priority = getPriorityFromViews();
+        Date date = new Date();
+        TaskEntry todo = new TaskEntry(description, priority, date);
+        if(mTaskId == DEFAULT_TASK_ID)
+            viewModel.insertTask(todo);
+        else{
+            todo.setId(mTaskId);
+            viewModel.updateTask(todo);
+
+        }
+        finish();
+
     }
 
     /**

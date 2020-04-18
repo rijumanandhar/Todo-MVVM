@@ -1,4 +1,4 @@
-package com.example.todomvvm;
+package com.example.todomvvm.tasks;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.todomvvm.R;
 import com.example.todomvvm.database.TaskEntry;
 
 import java.text.SimpleDateFormat;
@@ -118,6 +119,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             return 0;
         }
         return mTaskEntries.size();
+    }
+
+    public List<TaskEntry> getTasks(){
+        return mTaskEntries;
     }
 
     /**
