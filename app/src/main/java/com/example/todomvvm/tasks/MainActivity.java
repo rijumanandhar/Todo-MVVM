@@ -1,6 +1,8 @@
-package com.example.todomvvm;
+package com.example.todomvvm.tasks;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,7 +12,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.todomvvm.addedittask.AddEditTaskActivity;
+import com.example.todomvvm.R;
+import com.example.todomvvm.database.AppDatabase;
+import com.example.todomvvm.database.Repository;
+import com.example.todomvvm.database.TaskEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener {
@@ -21,10 +30,22 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
 
+    AppDatabase database;
+    Repository repository;
+    MainActivityViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        database = AppDatabase.getInstance(getApplicationContext());
+        repository = new Repository(database);
+
+
+        MainActivityViewModelFactory factory = new MainActivityViewModelFactory(repository);
+        viewModel = ViewModelProviders.of(this, factory).get(MainActivityViewModel.class);
+
 
         // Set the RecyclerView to its corresponding view
         mRecyclerView = findViewById(R.id.recyclerViewTasks);
@@ -55,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 // Here is where you'll implement swipe to delete
+
+                int position = viewHolder.getAdapterPosition();
+                List<TaskEntry> todoList = mAdapter.getTasks();
+                viewModel.deleteTask(todoList.get(position));
             }
         }).attachToRecyclerView(mRecyclerView);
 
@@ -73,10 +98,20 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                 startActivity(addTaskIntent);
             }
         });
+
+        viewModel.getTasks().observe(this, new Observer<List<TaskEntry>>() {
+            @Override
+            public void onChanged(List<TaskEntry> taskEntries) {
+                mAdapter.setTasks(taskEntries);
+            }
+        });
     }
 
     @Override
     public void onItemClickListener(int itemId) {
         // Launch AddTaskActivity adding the itemId as an extra in the intent
+        Intent intent = new Intent(MainActivity.this, AddEditTaskActivity.class);
+        intent.putExtra(AddEditTaskActivity.EXTRA_TASK_ID, itemId);
+        startActivity(intent);
     }
 }
