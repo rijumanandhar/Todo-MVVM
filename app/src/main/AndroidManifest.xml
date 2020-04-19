@@ -11,6 +11,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".addedittask.AddEditTaskActivity"
             android:label="Add a new Task"></activity>
+
         <activity android:name=".tasks.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
