@@ -30,8 +30,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
 
-    AppDatabase database;
-    Repository repository;
+
     MainActivityViewModel viewModel;
 
     @Override
@@ -39,13 +38,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        database = AppDatabase.getInstance(getApplicationContext());
-        repository = new Repository(database);
-
-
-        MainActivityViewModelFactory factory = new MainActivityViewModelFactory(repository);
-        viewModel = ViewModelProviders.of(this, factory).get(MainActivityViewModel.class);
-
+        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
 
         // Set the RecyclerView to its corresponding view
         mRecyclerView = findViewById(R.id.recyclerViewTasks);

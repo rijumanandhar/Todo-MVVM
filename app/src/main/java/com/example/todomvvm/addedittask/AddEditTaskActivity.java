@@ -39,16 +39,14 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
     private int mTaskId = DEFAULT_TASK_ID;
 
-    AppDatabase database;
-    Repository repository;
+
     AddEditTaskViewModel viewModel;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_task);
 
-        database = AppDatabase.getInstance(getApplicationContext());
-        repository = new Repository(database);
+
 
         initViews();
 
@@ -65,7 +63,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
                 // populate the UI
 
                 mTaskId = intent.getIntExtra(EXTRA_TASK_ID, DEFAULT_TASK_ID);
-                AddEditTaskViewModelFactory factory = new AddEditTaskViewModelFactory(repository, mTaskId);
+                AddEditTaskViewModelFactory factory = new AddEditTaskViewModelFactory(getApplication(), mTaskId);
                 viewModel = ViewModelProviders.of(this, factory).get(AddEditTaskViewModel.class);
 
                 viewModel.getTask().observe(this, new Observer<TaskEntry>() {
@@ -78,7 +76,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
             }
         }else{
-            AddEditTaskViewModelFactory factory = new AddEditTaskViewModelFactory(repository, mTaskId);
+            AddEditTaskViewModelFactory factory = new AddEditTaskViewModelFactory(getApplication(), mTaskId);
             viewModel = ViewModelProviders.of(this, factory).get(AddEditTaskViewModel.class);
         }
     }

@@ -1,5 +1,7 @@
 package com.example.todomvvm.addedittask;
 
+import android.app.Application;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -8,17 +10,17 @@ import com.example.todomvvm.database.Repository;
 
 public class AddEditTaskViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
-    Repository repository;
+    Application application;
     int taskId;
 
-    public AddEditTaskViewModelFactory(Repository repository, int taskId){
-        this.repository = repository;
+    public AddEditTaskViewModelFactory(Application application, int taskId){
+        this.application = application;
         this.taskId = taskId;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return  (T) new AddEditTaskViewModel(repository, taskId);
+        return  (T) new AddEditTaskViewModel(application, taskId);
     }
 }

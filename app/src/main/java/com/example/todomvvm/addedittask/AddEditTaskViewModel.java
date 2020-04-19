@@ -1,18 +1,24 @@
 package com.example.todomvvm.addedittask;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.todomvvm.database.AppDatabase;
 import com.example.todomvvm.database.Repository;
 import com.example.todomvvm.database.TaskEntry;
 
-public class AddEditTaskViewModel extends ViewModel {
+public class AddEditTaskViewModel extends AndroidViewModel {
 
     Repository repository;
     LiveData<TaskEntry> task;
 
-    AddEditTaskViewModel(Repository repository, int taskId){
-        this.repository = repository;
+    AddEditTaskViewModel(Application application, int taskId){
+        super(application);
+        AppDatabase database = AppDatabase.getInstance(application);
+        repository = new Repository(database);
         if(taskId != -1)
             task = repository.getTaskById(taskId);
     }
