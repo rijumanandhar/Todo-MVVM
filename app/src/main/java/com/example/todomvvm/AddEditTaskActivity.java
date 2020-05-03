@@ -1,6 +1,9 @@
 package com.example.todomvvm;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,7 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
+import com.example.todomvvm.database.AppDatabase;
 import com.example.todomvvm.database.TaskEntry;
+
+import java.util.Date;
 
 public class AddEditTaskActivity extends AppCompatActivity {
 
@@ -47,6 +53,17 @@ public class AddEditTaskActivity extends AppCompatActivity {
             mButton.setText(R.string.update_button);
             if (mTaskId == DEFAULT_TASK_ID) {
                 // populate the UI
+                mTaskId = intent.getIntExtra(EXTRA_TASK_ID, DEFAULT_TASK_ID);
+                AddEditTaskViewModelFactory factory = new AddEditTaskViewModelFactory(getApplication(),mTaskId);
+                final AddEditTaskViewModel viewModel = ViewModelProviders.of(this, factory).get(AddEditTaskViewModel.class);
+                viewModel.getTask().observe(this, new Observer<TaskEntry>() {
+                    @Override
+                    public void onChanged(TaskEntry taskEntry) {
+                        viewModel.getTask().removeObserver(this);
+                        populateUI(taskEntry);
+                    }
+                });
+
             }
         }
     }
@@ -79,6 +96,12 @@ public class AddEditTaskActivity extends AppCompatActivity {
      * @param task the taskEntry to populate the UI
      */
     private void populateUI(TaskEntry task) {
+        if (task == null) {
+            return;
+        } else {
+            mEditText.setText(task.getDescription());
+            setPriorityInViews(task.getPriority());
+        }
 
     }
 
@@ -87,7 +110,24 @@ public class AddEditTaskActivity extends AppCompatActivity {
      * It retrieves user input and inserts that new task data into the underlying database.
      */
     public void onSaveButtonClicked() {
-        // Not yet implemented
+        String description = mEditText.getText().toString();
+        int priority = getPriorityFromViews();
+        Date date = new Date();
+        final TaskEntry task = new TaskEntry(description, priority, date); //needs to be final to be executed in a different thread
+        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (mTaskId == DEFAULT_TASK_ID) {
+                    AppDatabase.getInstance(getApplicationContext()).taskDao().insertTask(task); //inserts tasks in a different thread
+                } else {
+                    task.setId(mTaskId);
+                    AppDatabase.getInstance(getApplicationContext()).taskDao().update(task); //inserts tasks in a different thread
+                }
+
+            }
+        });
+
+        finish(); //goes back to MainActivity
     }
 
     /**
