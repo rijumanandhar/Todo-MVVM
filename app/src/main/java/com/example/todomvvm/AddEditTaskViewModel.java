@@ -24,6 +24,11 @@ public class AddEditTaskViewModel extends AndroidViewModel {
         task = database.taskDao().loadTaskById(id);
     }
 
+    public AddEditTaskViewModel(@NonNull Application application) {
+        super(application);
+        database = AppDatabase.getInstance(getApplication());
+    }
+
     public void addTask (final TaskEntry task){
         AppDatabase.databaseWriteExecutor.execute(new Runnable() {
             @Override

@@ -3,6 +3,7 @@ package com.example.todomvvm;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
@@ -38,6 +39,8 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
     private int mTaskId = DEFAULT_TASK_ID;
 
+    AddEditTaskViewModel viewModel;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_task);
@@ -55,7 +58,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
                 // populate the UI
                 mTaskId = intent.getIntExtra(EXTRA_TASK_ID, DEFAULT_TASK_ID);
                 AddEditTaskViewModelFactory factory = new AddEditTaskViewModelFactory(getApplication(),mTaskId);
-                final AddEditTaskViewModel viewModel = ViewModelProviders.of(this, factory).get(AddEditTaskViewModel.class);
+                viewModel = ViewModelProviders.of(this, factory).get(AddEditTaskViewModel.class);
                 viewModel.getTask().observe(this, new Observer<TaskEntry>() {
                     @Override
                     public void onChanged(TaskEntry taskEntry) {
@@ -114,19 +117,13 @@ public class AddEditTaskActivity extends AppCompatActivity {
         int priority = getPriorityFromViews();
         Date date = new Date();
         final TaskEntry task = new TaskEntry(description, priority, date); //needs to be final to be executed in a different thread
-        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (mTaskId == DEFAULT_TASK_ID) {
-                    AppDatabase.getInstance(getApplicationContext()).taskDao().insertTask(task); //inserts tasks in a different thread
-                } else {
-                    task.setId(mTaskId);
-                    AppDatabase.getInstance(getApplicationContext()).taskDao().update(task); //inserts tasks in a different thread
-                }
-
-            }
-        });
-
+        if ( mTaskId != DEFAULT_TASK_ID){
+            task.setId(mTaskId);
+            viewModel.updateTask(task);
+        }else{
+            AddEditTaskViewModel viewModelAdd = ViewModelProviders.of(this).get(AddEditTaskViewModel.class);
+            viewModelAdd.addTask(task);
+        }
         finish(); //goes back to MainActivity
     }
 
