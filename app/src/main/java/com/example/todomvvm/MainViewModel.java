@@ -1,13 +1,16 @@
 package com.example.todomvvm;
 
 import android.app.Application;
+import android.os.Trace;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.todomvvm.database.AppDatabase;
+import com.example.todomvvm.database.Repository;
 import com.example.todomvvm.database.TaskEntry;
 
 import java.util.List;
@@ -15,28 +18,28 @@ import java.util.List;
 public class MainViewModel extends AndroidViewModel {
     private static final String TAG = MainViewModel.class.getSimpleName();
     private LiveData<List<TaskEntry>> task;
-    AppDatabase database;
+    Repository repository;
+
+    private MutableLiveData<Boolean> _showSnackBarEvent = new MutableLiveData<>();
+
+    public LiveData<Boolean> showSnackBarEvent(){
+        return  _showSnackBarEvent;
+    }
 
     public MainViewModel(@NonNull Application application) {
         super(application);
         Log.d(TAG,"Actively retrieving the tasks from database");
-        database = AppDatabase.getInstance(getApplication());
-        task = database.taskDao().loadAllTask();
+        repository = new Repository(getApplication());
+        task = repository.getAllTask();
     }
 
     public LiveData<List<TaskEntry>> getTask(){
         return task;
     }
 
-    public void deleteTask(final TaskEntry task){
-        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-
-                database.taskDao().deleteTask(task);
-            }
-        });
-
+    public void deleteTask(TaskEntry task){
+        repository.delete(task);
+        _showSnackBarEvent.setValue(true);
     }
 
 }

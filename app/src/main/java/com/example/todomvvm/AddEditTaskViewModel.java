@@ -7,12 +7,13 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.todomvvm.database.AppDatabase;
+import com.example.todomvvm.database.Repository;
 import com.example.todomvvm.database.TaskEntry;
 
 public class AddEditTaskViewModel extends AndroidViewModel {
 
     private LiveData<TaskEntry> task;
-    AppDatabase database;
+    Repository repository;
 
     public LiveData<TaskEntry> getTask(){
         return task;
@@ -20,32 +21,21 @@ public class AddEditTaskViewModel extends AndroidViewModel {
 
     public AddEditTaskViewModel(@NonNull Application application, int id) {
         super(application);
-        database = AppDatabase.getInstance(getApplication());
-        task = database.taskDao().loadTaskById(id);
+        repository = new Repository(getApplication());
+        task = repository.getTaskById(id);
     }
 
     public AddEditTaskViewModel(@NonNull Application application) {
         super(application);
-        database = AppDatabase.getInstance(getApplication());
+        repository = new Repository(getApplication());
     }
 
-    public void addTask (final TaskEntry task){
-        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                database.taskDao().insertTask(task);
-            }
-        });
+    public void addTask (TaskEntry task){
+        repository.insert(task);
 
     }
 
-    public void updateTask (final TaskEntry task){
-        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                database.taskDao().update(task);
-            }
-        });
-
+    public void updateTask (TaskEntry task){
+        repository.update(task);
     }
 }

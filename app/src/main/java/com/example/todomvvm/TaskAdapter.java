@@ -78,7 +78,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         // Programmatically set the text and color for the priority TextView
         String priorityString = "" + priority; // converts int to String
-        holder.priorityView.setText(priorityString);
+        //holder.priorityView.setText(priorityString);
 
         GradientDrawable priorityCircle = (GradientDrawable) holder.priorityView.getBackground();
         // Get the appropriate background color based on the priority
