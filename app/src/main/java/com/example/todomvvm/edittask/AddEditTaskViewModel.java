@@ -29,10 +29,10 @@ public class AddEditTaskViewModel extends AndroidViewModel {
         repository = new Repository(getApplication());
     }
 
-    public void addTask (TaskEntry task){
-        repository.insert(task);
-
-    }
+//    public void addTask (TaskEntry task){
+//        repository.insert(task);
+//
+//    }
 
     public void updateTask (TaskEntry task){
         repository.update(task);

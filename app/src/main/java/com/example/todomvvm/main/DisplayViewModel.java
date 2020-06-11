@@ -13,14 +13,13 @@ import com.example.todomvvm.database.TaskEntry;
 
 import java.util.List;
 
-public class MainViewModel extends AndroidViewModel {
-    private static final String TAG = MainViewModel.class.getSimpleName();
+public class DisplayViewModel extends AndroidViewModel {
+    private static final String TAG = DisplayViewModel.class.getSimpleName();
     private LiveData<List<TaskEntry>> task;
     Repository repository;
 
-    //edit
+    //constant to track which fragment is displayed
     public static boolean isDisplay = true;
-    public static int priority = 1;
 
     private MutableLiveData<Boolean> _showSnackBarEvent = new MutableLiveData<>();
 
@@ -28,7 +27,7 @@ public class MainViewModel extends AndroidViewModel {
         return  _showSnackBarEvent;
     }
 
-    public MainViewModel(@NonNull Application application) {
+    public DisplayViewModel(@NonNull Application application) {
         super(application);
         Log.d(TAG,"Actively retrieving the tasks from database");
         repository = new Repository(getApplication());

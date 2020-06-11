@@ -11,7 +11,6 @@ import com.example.todomvvm.R;
 
 
 public class MainActivity extends AppCompatActivity /*implements TaskAdapter.ItemClickListener*/ {
-
     // Constant for logging
     private static final String TAG = MainActivity.class.getSimpleName();
     // Member variables for the adapter and RecyclerView
@@ -24,21 +23,16 @@ public class MainActivity extends AppCompatActivity /*implements TaskAdapter.Ite
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Fragment fragmentDisplay = new DisplayFragment();
         Fragment fragmentAdd = new AddTaskFragment();
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        if (MainViewModel.isDisplay){
+        if (DisplayViewModel.isDisplay){
             fragmentTransaction.replace(R.id.fragment_container, fragmentDisplay);
         }else{
             fragmentTransaction.replace(R.id.fragment_container, fragmentAdd);
         }
-
-        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-
 //        // Set the RecyclerView to its corresponding view
 //        mRecyclerView = findViewById(R.id.recyclerViewTasks);
 //
@@ -100,7 +94,6 @@ public class MainActivity extends AppCompatActivity /*implements TaskAdapter.Ite
 //            }
 //        });
     }
-
     @Override
     protected void onResume() {
         super.onResume();

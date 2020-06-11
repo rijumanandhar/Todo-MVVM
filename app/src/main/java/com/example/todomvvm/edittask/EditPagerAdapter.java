@@ -22,6 +22,7 @@ public class EditPagerAdapter extends FragmentPagerAdapter {
 
     public void addFragment(int title){
         mFragmentId.add(title);
+        notifyDataSetChanged();
     }
 
     @NonNull

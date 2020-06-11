@@ -37,7 +37,7 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
 
-    MainViewModel viewModel;
+    DisplayViewModel viewModel;
 
     public DisplayFragment() {
         // Required empty public constructor
@@ -50,7 +50,7 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_display, container, false);
 
-        MainViewModel.isDisplay = true;
+        DisplayViewModel.isDisplay = true;
 
         // Set the RecyclerView to its corresponding view
         mRecyclerView = rootView.findViewById(R.id.recyclerViewTasks);
@@ -97,16 +97,11 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Create a new intent to start an AddTaskActivity
-//                Intent addTaskIntent = new Intent(MainActivity.this, AddEditTaskActivity.class);
-//                startActivity(addTaskIntent);
-
                 //replace fragment
                 Fragment fragment = new AddTaskFragment();
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, fragment);
-                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });
@@ -124,7 +119,7 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
     }
 
     private void setupViewModel() {
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(DisplayViewModel.class);
         viewModel.getTask().observe(getActivity(), new Observer<List<TaskEntry>>() {
             @Override
             public void onChanged(List<TaskEntry> taskEntries) {

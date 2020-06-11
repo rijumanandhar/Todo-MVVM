@@ -19,6 +19,8 @@ public class Repository {
         return taskDao.loadAllTask();
     }
 
+
+
     public LiveData<Integer> getTaskCount(){
         return taskDao.countAllTask();
     }

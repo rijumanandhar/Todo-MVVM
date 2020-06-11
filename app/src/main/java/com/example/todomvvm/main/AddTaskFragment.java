@@ -1,11 +1,13 @@
 package com.example.todomvvm.main;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +48,7 @@ public class AddTaskFragment extends Fragment {
 
     private int mTaskId = DEFAULT_TASK_ID;
 
-    AddEditTaskViewModel viewModel;
+    AddTaskViewModel viewModelAdd;
 
     public AddTaskFragment() {
         // Required empty public constructor
@@ -56,9 +58,11 @@ public class AddTaskFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG,"onCreate");
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_add_task, container, false);
-        MainViewModel.isDisplay = false;
+        DisplayViewModel.isDisplay = false;
+        viewModelAdd = ViewModelProviders.of(this).get(AddTaskViewModel.class);
         initViews(rootView);
         return rootView;
     }
@@ -74,13 +78,14 @@ public class AddTaskFragment extends Fragment {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.radButton1:
-                        MainViewModel.priority = PRIORITY_HIGH;
+                        viewModelAdd.setPriority(PRIORITY_HIGH);
                         break;
                     case R.id.radButton2:
-                        MainViewModel.priority = PRIORITY_MEDIUM;
+                        viewModelAdd.setPriority(PRIORITY_MEDIUM);
+                        Log.d(TAG,"Priority set to medium : "+viewModelAdd.getPriority());
                         break;
                     case R.id.radButton3:
-                        MainViewModel.priority = PRIORITY_LOW;
+                        viewModelAdd.setPriority(PRIORITY_LOW);
                 }
             }
         });
@@ -95,6 +100,9 @@ public class AddTaskFragment extends Fragment {
                 onSaveButtonClicked();
             }
         });
+
+        Log.d(TAG,"Getting priority from viewmodel : "+viewModelAdd.getPriority());
+        setPriorityInViews(viewModelAdd.getPriority(),rootView);
     }
 
     /**
@@ -103,32 +111,35 @@ public class AddTaskFragment extends Fragment {
      */
     public void onSaveButtonClicked() {
         String description = mEditText.getText().toString();
-        int priority = MainViewModel.priority;
+        int priority = viewModelAdd.getPriority();
         Date date = new Date();
         final TaskEntry task = new TaskEntry(description, priority, date); //needs to be final to be executed in a different thread
-        AddEditTaskViewModel viewModelAdd = ViewModelProviders.of(this).get(AddEditTaskViewModel.class);
         viewModelAdd.addTask(task);
 
-        //go back to MainActivity
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        startActivity(intent);
+        //replace fragment
+        Fragment fragment = new DisplayFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
     }
 
     /**
-     * getPriority is called whenever the selected priority needs to be retrieved
+     * setPriority is called when we receive a task from MainActivity
+     *
+     * @param priority the priority value
      */
-    public int getPriorityFromViews(View rootView) {
-        int checkedId = ((RadioGroup) rootView.findViewById(R.id.radioGroup)).getCheckedRadioButtonId();
-        switch (checkedId) {
-            case R.id.radButton1:
-                MainViewModel.priority = PRIORITY_HIGH;
+    public void setPriorityInViews(int priority, View rootView) {
+        switch (priority) {
+            case PRIORITY_HIGH:
+                ((RadioGroup) rootView.findViewById(R.id.radioGroup)).check(R.id.radButton1);
                 break;
-            case R.id.radButton2:
-                MainViewModel.priority = PRIORITY_MEDIUM;
+            case PRIORITY_MEDIUM:
+                ((RadioGroup) rootView.findViewById(R.id.radioGroup)).check(R.id.radButton2);
                 break;
-            case R.id.radButton3:
-                MainViewModel.priority = PRIORITY_LOW;
+            case PRIORITY_LOW:
+                ((RadioGroup) rootView.findViewById(R.id.radioGroup)).check(R.id.radButton3);
         }
-        return MainViewModel.priority;
     }
+
 }

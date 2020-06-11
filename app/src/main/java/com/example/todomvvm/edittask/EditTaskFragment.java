@@ -1,5 +1,6 @@
 package com.example.todomvvm.edittask;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.example.todomvvm.R;
 import com.example.todomvvm.database.TaskEntry;
+import com.example.todomvvm.main.MainActivity;
 
 import java.util.Date;
 
@@ -121,7 +123,9 @@ public class EditTaskFragment extends Fragment {
         task.setId(mTaskId);
         viewModel.updateTask(task);
 
-        //goes back to MainActivity
+        //go back to MainActivity
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
     }
 
     /**

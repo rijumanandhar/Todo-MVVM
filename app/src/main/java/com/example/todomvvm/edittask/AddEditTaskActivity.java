@@ -8,6 +8,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,7 +44,7 @@ public class AddEditTaskActivity extends AppCompatActivity {
     //edit
     TextView taskID;
 
-    private int mTaskId = DEFAULT_TASK_ID;
+    private int mTaskId = DEFAULT_TASK_ID, position = 0;
 
     AddEditTaskViewModel viewModel;
 
@@ -60,18 +61,9 @@ public class AddEditTaskActivity extends AppCompatActivity {
 //            mTaskId = savedInstanceState.getInt(INSTANCE_TASK_ID, DEFAULT_TASK_ID);
 //        }
 
-        mEditPagerAdapter = new EditPagerAdapter(getSupportFragmentManager());
-        mViewPager = findViewById(R.id.ViewPager);
-        Repository repository = new Repository(getApplication());
-        LiveData<List<TaskEntry>> task = repository.getAllTask();
-        //LiveData<Integer> noTask = repository.getTaskCount();
-        for (int i=0; i < task.sum(); i++){
-
-        }
-
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(EXTRA_TASK_ID)) {
-            mButton.setText(R.string.update_button);
+            //mButton.setText(R.string.update_button);
             //Create Bundle
             if (mTaskId == DEFAULT_TASK_ID) {
                 // populate the UI
@@ -88,6 +80,24 @@ public class AddEditTaskActivity extends AppCompatActivity {
 
             }
         }
+        mEditPagerAdapter = new EditPagerAdapter(getSupportFragmentManager());
+        mViewPager = findViewById(R.id.ViewPager);
+        Repository repository = new Repository(getApplication());
+        LiveData<List<TaskEntry>> task = repository.getAllTask();
+        task.observe(this, new Observer<List<TaskEntry>>() {
+            @Override
+            public void onChanged(List<TaskEntry> taskEntries) {
+                for (int i=0; i < taskEntries.size(); i++){
+                    mEditPagerAdapter.addFragment(taskEntries.get(i).getId());
+                    if (taskEntries.get(i).getId() == mTaskId){
+                        position = i;
+                        Log.d(TAG,"Position "+position+" has taskID "+mTaskId);
+                        mViewPager.setCurrentItem(position,false);
+                    }
+                }
+            }
+        });
+        mViewPager.setAdapter(mEditPagerAdapter);
     }
 
 //    @Override
