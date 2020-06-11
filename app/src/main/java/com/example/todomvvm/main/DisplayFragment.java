@@ -1,6 +1,11 @@
-package com.example.todomvvm;
+package com.example.todomvvm.main;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -8,49 +13,60 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
-import com.example.todomvvm.database.AppDatabase;
+import com.example.todomvvm.R;
+import com.example.todomvvm.edittask.AddEditTaskActivity;
 import com.example.todomvvm.database.TaskEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
-
-public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickListener {
 
     // Constant for logging
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = DisplayFragment.class.getSimpleName();
     // Member variables for the adapter and RecyclerView
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
 
     MainViewModel viewModel;
 
+    public DisplayFragment() {
+        // Required empty public constructor
+    }
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_display, container, false);
+
+        MainViewModel.isDisplay = true;
 
         // Set the RecyclerView to its corresponding view
-        mRecyclerView = findViewById(R.id.recyclerViewTasks);
+        mRecyclerView = rootView.findViewById(R.id.recyclerViewTasks);
 
         // Set the layout for the RecyclerView to be a linear layout, which measures and
         // positions items within a RecyclerView into a linear list
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // Initialize the adapter and attach it to the RecyclerView
-        mAdapter = new TaskAdapter(this, this);
+        mAdapter = new TaskAdapter(getActivity(), this);
         mRecyclerView.setAdapter(mAdapter);
 
-        DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL);
+        DividerItemDecoration decoration = new DividerItemDecoration(getActivity().getApplicationContext(), DividerItemDecoration.VERTICAL);
         mRecyclerView.addItemDecoration(decoration);
 
-        /*
+         /*
          Add a touch helper to the RecyclerView to recognize when a user swipes to delete an item.
          An ItemTouchHelper enables touch behavior (like swipe and move) on each ViewHolder,
          and uses callbacks to signal when a user is performing these actions.
@@ -71,24 +87,32 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             }
         }).attachToRecyclerView(mRecyclerView);
 
-        /*
+         /*
          Set the Floating Action Button (FAB) to its corresponding View.
          Attach an OnClickListener to it, so that when it's clicked, a new intent will be created
          to launch the AddTaskActivity.
          */
-        final FloatingActionButton fabButton = findViewById(R.id.fab);
+        final FloatingActionButton fabButton = rootView.findViewById(R.id.fab);
 
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Create a new intent to start an AddTaskActivity
-                Intent addTaskIntent = new Intent(MainActivity.this, AddEditTaskActivity.class);
-                startActivity(addTaskIntent);
+//                Intent addTaskIntent = new Intent(MainActivity.this, AddEditTaskActivity.class);
+//                startActivity(addTaskIntent);
+
+                //replace fragment
+                Fragment fragment = new AddTaskFragment();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
 
         setupViewModel();
-        viewModel.showSnackBarEvent().observe(this, new Observer<Boolean>() {
+        viewModel.showSnackBarEvent().observe(getActivity(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean  showSnackBar) {
                 if (showSnackBar == true){
@@ -96,16 +120,12 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                 }
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
+        return rootView;
     }
 
     private void setupViewModel() {
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        viewModel.getTask().observe(this, new Observer<List<TaskEntry>>() {
+        viewModel.getTask().observe(getActivity(), new Observer<List<TaskEntry>>() {
             @Override
             public void onChanged(List<TaskEntry> taskEntries) {
                 Log.d(TAG,"Updating list of tasks from LiveData in ViewModel");
@@ -117,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     @Override
     public void onItemClickListener(int itemId) {
         // Launch AddTaskActivity adding the itemId as an extra in the intent
-        Intent intent = new Intent(this, AddEditTaskActivity.class);
+        Intent intent = new Intent(getActivity(), AddEditTaskActivity.class);
         intent.putExtra(AddEditTaskActivity.EXTRA_TASK_ID, itemId);
         startActivity(intent);
     }

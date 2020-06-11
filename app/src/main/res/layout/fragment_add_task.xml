@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-   <!-- This vertical linear layout contains all the views in the AddTaskActivity code.
-    This includes an EditText to adtaskEntrytask description, and buttons to select a priority
-    -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,12 +9,6 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingStart="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
-
-    <!-- edit -->
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/ViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
     <!-- TextView and FrameLayout (which contains buttons) for Task ID -->
     <TextView

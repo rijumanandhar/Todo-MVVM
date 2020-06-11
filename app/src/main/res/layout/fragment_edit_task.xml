@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-   <!-- This vertical linear layout contains all the views in the AddTaskActivity code.
-    This includes an EditText to adtaskEntrytask description, and buttons to select a priority
-    -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -11,13 +9,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingStart="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
-
-    <!-- edit -->
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/ViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".edittask.EditTaskFragment">
 
     <!-- TextView and FrameLayout (which contains buttons) for Task ID -->
     <TextView
@@ -99,7 +92,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@color/colorPrimary"
-        android:text="@string/add_button"
+        android:text="@string/update_button"
         android:textColor="@android:color/primary_text_dark" />
 
 </LinearLayout>

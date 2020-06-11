@@ -16,6 +16,9 @@ public interface TaskDao {
     @Query("Select * from task order by priority")
     LiveData<List<TaskEntry>> loadAllTask();
 
+    @Query("Select count(*) from task")
+    LiveData<Integer> countAllTask();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertTask(TaskEntry task);
 
