@@ -6,11 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-public class AddEditTaskViewModelFactory extends ViewModelProvider.NewInstanceFactory {
+public class EditTaskViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     Application application;
     int id;
 
-    public AddEditTaskViewModelFactory(Application application, int id){
+    public EditTaskViewModelFactory(Application application, int id){
         this.application = application;
         this.id = id;
     }
@@ -18,6 +18,6 @@ public class AddEditTaskViewModelFactory extends ViewModelProvider.NewInstanceFa
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new AddEditTaskViewModel(application, id);
+        return (T) new EditTaskViewModel(application, id);
     }
 }

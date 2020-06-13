@@ -13,13 +13,15 @@ import com.example.todomvvm.database.TaskEntry;
 
 import java.util.List;
 
-public class DisplayViewModel extends AndroidViewModel {
-    private static final String TAG = DisplayViewModel.class.getSimpleName();
+public class MainViewModel extends AndroidViewModel {
+    private static final String TAG = MainViewModel.class.getSimpleName();
+    private int priority = 1;
+    private String description;
     private LiveData<List<TaskEntry>> task;
     Repository repository;
 
     //constant to track which fragment is displayed
-    public static boolean isDisplay = true;
+    public static boolean listDisplayFragment = true;
 
     private MutableLiveData<Boolean> _showSnackBarEvent = new MutableLiveData<>();
 
@@ -27,7 +29,7 @@ public class DisplayViewModel extends AndroidViewModel {
         return  _showSnackBarEvent;
     }
 
-    public DisplayViewModel(@NonNull Application application) {
+    public MainViewModel(@NonNull Application application) {
         super(application);
         Log.d(TAG,"Actively retrieving the tasks from database");
         repository = new Repository(getApplication());
@@ -41,6 +43,26 @@ public class DisplayViewModel extends AndroidViewModel {
     public void deleteTask(TaskEntry task){
         repository.delete(task);
         _showSnackBarEvent.setValue(true);
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void addTask (TaskEntry task){
+        repository.insert(task);
     }
 
 }

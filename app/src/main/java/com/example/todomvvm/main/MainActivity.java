@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity /*implements TaskAdapter.Ite
         Fragment fragmentAdd = new AddTaskFragment();
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        if (DisplayViewModel.isDisplay){
+        if (MainViewModel.listDisplayFragment){
             fragmentTransaction.replace(R.id.fragment_container, fragmentDisplay);
         }else{
             fragmentTransaction.replace(R.id.fragment_container, fragmentAdd);

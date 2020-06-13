@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,7 @@ public class EditTaskFragment extends Fragment {
 
     private int mTaskId;
 
-    AddEditTaskViewModel viewModel;
+    EditTaskViewModel viewModel;
 
     //edit
     TextView taskID;
@@ -59,6 +60,7 @@ public class EditTaskFragment extends Fragment {
         args.putInt(ARGS_NAME, mTaskId);
         EditTaskFragment fragment = new EditTaskFragment();
         fragment.setArguments(args);
+        Log.d(TAG," Fragment Instance created with "+mTaskId);
         return  fragment;
     }
 
@@ -68,7 +70,7 @@ public class EditTaskFragment extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_edit_task, container, false);
         initViews();
-
+        Log.d(TAG," onCreate");
         return rootView;
     }
 
@@ -79,8 +81,9 @@ public class EditTaskFragment extends Fragment {
         if (args != null){
             //get mTaskId from bundle
             mTaskId = args.getInt(ARGS_NAME);
-            AddEditTaskViewModelFactory factory = new AddEditTaskViewModelFactory(getActivity().getApplication(),mTaskId);
-            viewModel = ViewModelProviders.of(this, factory).get(AddEditTaskViewModel.class);
+            //EditTaskViewModel.mTaskId = mTaskId;
+            EditTaskViewModelFactory factory = new EditTaskViewModelFactory(getActivity().getApplication(),mTaskId);
+            viewModel = ViewModelProviders.of(this, factory).get(EditTaskViewModel.class);
             viewModel.getTask().observe(getActivity(), new Observer<TaskEntry>() {
                 @Override
                 public void onChanged(TaskEntry taskEntry) {
@@ -88,7 +91,7 @@ public class EditTaskFragment extends Fragment {
                     populateUI(taskEntry);
                 }
             });
-
+            Log.d(TAG," onStart viewModel implemented");
         }
     }
 

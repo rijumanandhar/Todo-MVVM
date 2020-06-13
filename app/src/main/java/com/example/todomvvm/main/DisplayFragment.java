@@ -19,7 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.todomvvm.R;
-import com.example.todomvvm.edittask.AddEditTaskActivity;
+import com.example.todomvvm.edittask.EditTaskActivity;
 import com.example.todomvvm.database.TaskEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -37,7 +37,7 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
 
-    DisplayViewModel viewModel;
+    MainViewModel viewModel;
 
     public DisplayFragment() {
         // Required empty public constructor
@@ -50,7 +50,7 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_display, container, false);
 
-        DisplayViewModel.isDisplay = true;
+        MainViewModel.listDisplayFragment = true;
 
         // Set the RecyclerView to its corresponding view
         mRecyclerView = rootView.findViewById(R.id.recyclerViewTasks);
@@ -119,7 +119,7 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
     }
 
     private void setupViewModel() {
-        viewModel = ViewModelProviders.of(this).get(DisplayViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
         viewModel.getTask().observe(getActivity(), new Observer<List<TaskEntry>>() {
             @Override
             public void onChanged(List<TaskEntry> taskEntries) {
@@ -132,8 +132,8 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
     @Override
     public void onItemClickListener(int itemId) {
         // Launch AddTaskActivity adding the itemId as an extra in the intent
-        Intent intent = new Intent(getActivity(), AddEditTaskActivity.class);
-        intent.putExtra(AddEditTaskActivity.EXTRA_TASK_ID, itemId);
+        Intent intent = new Intent(getActivity(), EditTaskActivity.class);
+        intent.putExtra(EditTaskActivity.EXTRA_TASK_ID, itemId);
         startActivity(intent);
     }
 }

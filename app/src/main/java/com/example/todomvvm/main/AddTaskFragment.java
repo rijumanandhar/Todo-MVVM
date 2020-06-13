@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +19,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.todomvvm.R;
-import com.example.todomvvm.edittask.AddEditTaskActivity;
-import com.example.todomvvm.edittask.AddEditTaskViewModel;
 import com.example.todomvvm.database.TaskEntry;
 
 import java.util.Date;
@@ -27,11 +27,12 @@ import java.util.Date;
  * A simple {@link Fragment} subclass.
  */
 public class AddTaskFragment extends Fragment {
+
     // Constant for default task id to be used when not in update mode
     private static final int DEFAULT_TASK_ID = -1;
 
     // Constant for logging
-    private static final String TAG = AddEditTaskActivity.class.getSimpleName();
+    private static final String TAG = AddTaskFragment.class.getSimpleName();
 
     // Constants for priority
     public static final int PRIORITY_HIGH = 1;
@@ -48,7 +49,7 @@ public class AddTaskFragment extends Fragment {
 
     private int mTaskId = DEFAULT_TASK_ID;
 
-    AddTaskViewModel viewModelAdd;
+    MainViewModel viewModelAdd;
 
     public AddTaskFragment() {
         // Required empty public constructor
@@ -61,8 +62,8 @@ public class AddTaskFragment extends Fragment {
         Log.d(TAG,"onCreate");
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_add_task, container, false);
-        DisplayViewModel.isDisplay = false;
-        viewModelAdd = ViewModelProviders.of(this).get(AddTaskViewModel.class);
+        MainViewModel.listDisplayFragment = false;
+        viewModelAdd = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
         initViews(rootView);
         return rootView;
     }
@@ -73,6 +74,21 @@ public class AddTaskFragment extends Fragment {
     private void initViews(View rootView) {
         mEditText = rootView.findViewById(R.id.editTextTaskDescription);
         mRadioGroup = rootView.findViewById(R.id.radioGroup);
+
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                    viewModelAdd.setDescription(mEditText.getText().toString());
+            }
+        });
         mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -86,12 +102,10 @@ public class AddTaskFragment extends Fragment {
                         break;
                     case R.id.radButton3:
                         viewModelAdd.setPriority(PRIORITY_LOW);
+                        Log.d(TAG,"Priority set to medium : "+viewModelAdd.getPriority());
                 }
             }
         });
-
-        //edit
-        taskID = rootView.findViewById(R.id.taskID);
 
         mButton = rootView.findViewById(R.id.updateButton);
         mButton.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +117,9 @@ public class AddTaskFragment extends Fragment {
 
         Log.d(TAG,"Getting priority from viewmodel : "+viewModelAdd.getPriority());
         setPriorityInViews(viewModelAdd.getPriority(),rootView);
+        if (viewModelAdd.getDescription() != null){
+            mEditText.setText(viewModelAdd.getDescription());
+        }
     }
 
     /**
