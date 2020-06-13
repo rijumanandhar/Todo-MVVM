@@ -1,5 +1,6 @@
 package com.example.todomvvm.main;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,8 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.todomvvm.R;
@@ -43,6 +46,8 @@ public class AddTaskFragment extends Fragment {
     EditText mEditText;
     RadioGroup mRadioGroup;
     Button mButton;
+    Switch mSwitch;
+    TextView mTextView;
 
     //edit
     TextView taskID;
@@ -71,9 +76,21 @@ public class AddTaskFragment extends Fragment {
     /**
      * initViews is called from onCreate to init the member variable views
      */
-    private void initViews(View rootView) {
+    private void initViews(final View rootView) {
         mEditText = rootView.findViewById(R.id.editTextTaskDescription);
         mRadioGroup = rootView.findViewById(R.id.radioGroup);
+        mSwitch = rootView.findViewById(R.id.reminderSetSwitch);
+        mTextView = rootView.findViewById(R.id.remiderTextView);
+
+        mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    viewModelAdd.setReminder(true);
+
+                }
+            }
+        });
 
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -95,13 +112,16 @@ public class AddTaskFragment extends Fragment {
                 switch (checkedId) {
                     case R.id.radButton1:
                         viewModelAdd.setPriority(PRIORITY_HIGH);
+                        setPriorityInViews(PRIORITY_HIGH,rootView);
                         break;
                     case R.id.radButton2:
                         viewModelAdd.setPriority(PRIORITY_MEDIUM);
+                        setPriorityInViews(PRIORITY_MEDIUM,rootView);
                         Log.d(TAG,"Priority set to medium : "+viewModelAdd.getPriority());
                         break;
                     case R.id.radButton3:
                         viewModelAdd.setPriority(PRIORITY_LOW);
+                        setPriorityInViews(PRIORITY_LOW,rootView);
                         Log.d(TAG,"Priority set to medium : "+viewModelAdd.getPriority());
                 }
             }
@@ -150,12 +170,21 @@ public class AddTaskFragment extends Fragment {
         switch (priority) {
             case PRIORITY_HIGH:
                 ((RadioGroup) rootView.findViewById(R.id.radioGroup)).check(R.id.radButton1);
+                rootView.findViewById(R.id.radButton1).setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                rootView.findViewById(R.id.radButton2).setBackgroundColor(Color.TRANSPARENT);
+                rootView.findViewById(R.id.radButton3).setBackgroundColor(Color.TRANSPARENT);
                 break;
             case PRIORITY_MEDIUM:
                 ((RadioGroup) rootView.findViewById(R.id.radioGroup)).check(R.id.radButton2);
+                rootView.findViewById(R.id.radButton2).setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                rootView.findViewById(R.id.radButton1).setBackgroundColor(Color.TRANSPARENT);
+                rootView.findViewById(R.id.radButton3).setBackgroundColor(Color.TRANSPARENT);
                 break;
             case PRIORITY_LOW:
                 ((RadioGroup) rootView.findViewById(R.id.radioGroup)).check(R.id.radButton3);
+                rootView.findViewById(R.id.radButton3).setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                rootView.findViewById(R.id.radButton2).setBackgroundColor(Color.TRANSPARENT);
+                rootView.findViewById(R.id.radButton1).setBackgroundColor(Color.TRANSPARENT);
         }
     }
 

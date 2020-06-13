@@ -19,17 +19,11 @@ public class Repository {
         return taskDao.loadAllTask();
     }
 
-
-
-    public LiveData<Integer> getTaskCount(){
-        return taskDao.countAllTask();
-    }
-
     public LiveData<TaskEntry> getTaskById(int id){
         return taskDao.loadTaskById(id);
     }
 
-    public void insert(final TaskEntry task){
+    public void insertTask(final TaskEntry task){
         AppDatabase.databaseWriteExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -38,21 +32,63 @@ public class Repository {
         });
     }
 
-    public void update (final TaskEntry task){
+    public void updateTask(final TaskEntry task){
         AppDatabase.databaseWriteExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                taskDao.update(task);
+                taskDao.updateTask(task);
             }
         });
     }
 
-    public void delete(final TaskEntry task){
+    public void deleteTask(final TaskEntry task){
         AppDatabase.databaseWriteExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 taskDao.deleteTask(task);
             }
         });
+    }
+
+    //Reminder
+
+    //getReminder
+    public LiveData<Reminder> getReminderByTaskId(int id){
+        return taskDao.loadReminderByTaskId(id);
+    }
+
+    //insert
+    public void insertReminder(final Reminder reminder){
+        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                taskDao.insertReminder(reminder);
+            }
+        });
+    }
+
+    //update
+    public void updateReminder(final Reminder reminder){
+        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                taskDao.updateReminder(reminder);
+            }
+        });
+    }
+
+    //delete
+    public void deleteReminder(final Reminder reminder){
+        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                taskDao.deleteReminder(reminder);
+            }
+        });
+    }
+
+    //reminderanduser
+    public LiveData<List<TaskReminder>> getTaskAndReminder(){
+        return taskDao.loadTaskAndReminder();
     }
 }

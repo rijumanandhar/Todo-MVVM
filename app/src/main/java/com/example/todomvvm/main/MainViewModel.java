@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.todomvvm.database.Reminder;
 import com.example.todomvvm.database.Repository;
 import com.example.todomvvm.database.TaskEntry;
 
@@ -19,6 +20,7 @@ public class MainViewModel extends AndroidViewModel {
     private String description;
     private LiveData<List<TaskEntry>> task;
     Repository repository;
+    private boolean isReminder = false;
 
     //constant to track which fragment is displayed
     public static boolean listDisplayFragment = true;
@@ -41,7 +43,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void deleteTask(TaskEntry task){
-        repository.delete(task);
+        repository.deleteTask(task);
         _showSnackBarEvent.setValue(true);
     }
 
@@ -62,7 +64,22 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void addTask (TaskEntry task){
-        repository.insert(task);
+        repository.insertTask(task);
     }
 
+    public void addReminder (Reminder reminder){
+        repository.insertReminder(reminder);
+    }
+
+    public void deleteReminder (Reminder reminder){
+        repository.deleteReminder(reminder);
+    }
+
+    public boolean isReminder() {
+        return isReminder;
+    }
+
+    public void setReminder(boolean reminder) {
+        isReminder = reminder;
+    }
 }

@@ -12,7 +12,7 @@ import androidx.room.TypeConverters;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {TaskEntry.class}, version = 1, exportSchema = false)
+@Database(entities = {TaskEntry.class, Reminder.class}, version = 1, exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();

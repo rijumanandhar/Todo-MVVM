@@ -30,6 +30,6 @@ public class EditTaskViewModel extends AndroidViewModel {
     }
 
     public void updateTask (TaskEntry task){
-        repository.update(task);
+        repository.updateTask(task);
     }
 }

@@ -10,26 +10,17 @@
     android:paddingStart="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
-    <!-- TextView and FrameLayout (which contains buttons) for Task ID -->
-    <TextView
-        style="@style/TextAppearance.AppCompat.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Task ID"
-        android:textColor="@android:color/primary_text_light"
-        android:id="@+id/taskID"/>
-
     <!-- EditText for getttaskEntrytask description input -->
     <EditText
         android:id="@+id/editTextTaskDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"
+        android:textColor="@color/colorPrimary"
+        android:textColorHint="@color/colorPrimary"
         android:hint="@string/edit_task_description"
-        android:paddingBottom="@dimen/activity_horizontal_margin" />
+        android:paddingBottom="@dimen/activity_horizontal_margin"
+        android:backgroundTint="@color/colorPrimary"/>
 
     <!-- TextView and FrameLayout (which contains buttons) for Priority Selection -->
     <TextView
@@ -39,8 +30,8 @@
         android:layout_gravity="start"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/priority_string"
-        android:textColor="@android:color/primary_text_light" />
+        android:textColor="@color/colorPrimary"
+        android:text="@string/priority_string" />
 
     <!-- RadioGroup for visible selection of a priority -->
     <RadioGroup
@@ -57,30 +48,61 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/materialRed"
+            android:buttonTint="@color/materialRed"
             android:checked="true"
             android:text="@string/high_priority"
-            android:theme="@style/WhiteRadioButton" />
+             />
 
         <RadioButton
             android:id="@+id/radButton2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/materialOrange"
-            android:text="@string/med_priority"
-            android:theme="@style/WhiteRadioButton" />
+            android:buttonTint="@color/materialOrange"
+            android:text="@string/med_priority" />
 
         <RadioButton
             android:id="@+id/radButton3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/materialYellow"
-            android:text="@string/low_priority"
-            android:theme="@style/WhiteRadioButton" />
+            android:buttonTint="@color/materialYellow"
+            android:text="@string/low_priority" />
 
     </RadioGroup>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorPrimary"
+            android:text="Set Reminder" />
+
+         <Switch
+             android:id="@+id/reminderSetSwitch"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:paddingLeft="20dp"
+             android:theme="@style/SCBSwitch"/>
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/remiderTextView"
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/colorPrimary"
+        android:text="Reminder :"
+        android:visibility="invisible"/>
 
     <!-- Add button -->
     <Button
@@ -89,8 +111,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/round_corner_button"
         android:text="@string/add_button"
-        android:textColor="@android:color/primary_text_dark" />
+        android:textColor="@color/colorAccent" />
 
 </LinearLayout>
