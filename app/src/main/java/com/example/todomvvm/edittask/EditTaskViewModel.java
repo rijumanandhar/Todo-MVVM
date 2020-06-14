@@ -11,6 +11,8 @@ import com.example.todomvvm.database.Reminder;
 import com.example.todomvvm.database.Repository;
 import com.example.todomvvm.database.TaskEntry;
 
+import java.util.List;
+
 public class EditTaskViewModel extends AndroidViewModel {
     // Constant for logging
     private static final String TAG = EditTaskViewModel.class.getSimpleName();
@@ -35,8 +37,17 @@ public class EditTaskViewModel extends AndroidViewModel {
         Log.d(TAG," Created");
     }
 
+    public EditTaskViewModel(Application application){
+        super(application);
+        repository = new Repository(getApplication());
+    }
+
     public void updateTask (TaskEntry task){
         repository.updateTask(task);
+    }
+
+    public LiveData<List<TaskEntry>> getAllTasks(){
+        return repository.getAllTask();
     }
 
     public LiveData<Reminder> getReminder(int id){

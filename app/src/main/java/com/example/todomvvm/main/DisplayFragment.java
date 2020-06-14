@@ -1,6 +1,7 @@
 package com.example.todomvvm.main;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -65,6 +66,7 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
         mRecyclerView.setAdapter(mAdapter);
 
         DividerItemDecoration decoration = new DividerItemDecoration(getActivity().getApplicationContext(), DividerItemDecoration.VERTICAL);
+        decoration.setDrawable(new ColorDrawable(getResources().getColor(R.color.colorPrimary)));
         mRecyclerView.addItemDecoration(decoration);
 
          /*

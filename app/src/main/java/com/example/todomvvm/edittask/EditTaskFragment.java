@@ -87,10 +87,6 @@ public class EditTaskFragment extends Fragment {
             //get mTaskId from bundle
             mTaskId = args.getInt(ARGS_NAME);
             Log.d("RijuStart","1. "+mTaskId);
-
-            //set updated taskTd in viewmodel
-            EditTaskViewModel.viewModelTaskId = mTaskId;
-            Log.d("RijuStart","2. View model "+EditTaskViewModel.viewModelTaskId);
             //EditTaskViewModel.mTaskId = mTaskId;
             EditTaskViewModelFactory factory = new EditTaskViewModelFactory(getActivity().getApplication(),mTaskId);
             viewModel = ViewModelProviders.of(this, factory).get(EditTaskViewModel.class);
@@ -98,15 +94,19 @@ public class EditTaskFragment extends Fragment {
                 @Override
                 public void onChanged(final TaskEntry taskEntry) {
                     viewModel.getTask().removeObserver(this);
-                    viewModel.getReminder(taskEntry.getId()).observe(getActivity(), new Observer<Reminder>() {
-                        @Override
-                        public void onChanged(Reminder reminder) {
-                            viewModel.getReminder(taskEntry.getId()).removeObserver(this);
-                            populateUI(taskEntry,reminder);
-                            //Log.d(TAG,"TaskID: "+taskEntry.getId()+" ReminderTaskId: "+reminder.getTaskId());
-                        }
-                    });
+                    try{
+                        viewModel.getReminder(taskEntry.getId()).observe(getActivity(), new Observer<Reminder>() {
+                            @Override
+                            public void onChanged(Reminder reminder) {
+                                viewModel.getReminder(taskEntry.getId()).removeObserver(this);
+                                populateUI(taskEntry,reminder);
+                                //Log.d(TAG,"TaskID: "+taskEntry.getId()+" ReminderTaskId: "+reminder.getTaskId());
+                            }
+                        });
 
+                    }catch (NullPointerException e){
+                        populateUI(taskEntry,null);
+                    }
                 }
             });
             Log.d(TAG," onStart viewModel implemented");

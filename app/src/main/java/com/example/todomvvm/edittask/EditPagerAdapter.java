@@ -6,11 +6,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditPagerAdapter extends FragmentPagerAdapter {
+public class EditPagerAdapter extends FragmentStatePagerAdapter {
     // Constant for logging
     private static final String TAG = EditPagerAdapter.class.getSimpleName();
     private final List<Integer> mFragmentId= new ArrayList<>();
@@ -37,5 +38,9 @@ public class EditPagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         Log.d(TAG," Fragment size returned "+mFragmentId.size());
         return mFragmentId.size();
+    }
+
+    public int getIdFromPosition(int position){
+        return mFragmentId.get(position);
     }
 }
