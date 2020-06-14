@@ -7,12 +7,18 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.todomvvm.database.Reminder;
 import com.example.todomvvm.database.Repository;
 import com.example.todomvvm.database.TaskEntry;
 
 public class EditTaskViewModel extends AndroidViewModel {
     // Constant for logging
     private static final String TAG = EditTaskViewModel.class.getSimpleName();
+
+    //Keep track of rotation
+    public static boolean userClick = false;
+
+    public static int viewModelTaskId;
 
     private LiveData<TaskEntry> task;
     Repository repository;
@@ -31,5 +37,9 @@ public class EditTaskViewModel extends AndroidViewModel {
 
     public void updateTask (TaskEntry task){
         repository.updateTask(task);
+    }
+
+    public LiveData<Reminder> getReminder(int id){
+        return repository.getReminderByTaskId(id);
     }
 }

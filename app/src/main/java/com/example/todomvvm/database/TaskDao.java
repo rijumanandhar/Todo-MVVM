@@ -1,5 +1,7 @@
 package com.example.todomvvm.database;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -12,42 +14,43 @@ import androidx.room.Update;
 import java.util.List;
 
 @Dao
-public interface TaskDao {
-
+public abstract class TaskDao {
     @Query("Select * from task order by priority")
-    LiveData<List<TaskEntry>> loadAllTask();
-
-//    @Query("Select count(*) from task")
-//    LiveData<Integer> countAllTask();
+    abstract LiveData<List<TaskEntry>> loadAllTask();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertTask(TaskEntry task);
+    abstract void insertTask(TaskEntry task);
 
     @Update
-    void updateTask(TaskEntry task);
+    abstract void updateTask(TaskEntry task);
 
     @Delete
-    void deleteTask(TaskEntry task);
+    abstract void deleteTask(TaskEntry task);
 
     @Query("Select * from task where id = :id")
-    LiveData<TaskEntry> loadTaskById (int id);
+    abstract LiveData<TaskEntry> loadTaskById (int id);
 
-    //Reminder
+//Reminder
 
     @Transaction
     @Query("SELECT * FROM task")
-    public LiveData<List<TaskReminder>> loadTaskAndReminder();
+    abstract public LiveData<List<TaskReminder>> loadTaskAndReminder();
 
     @Query("Select * from Reminder where taskId = :taskId")
-    LiveData<Reminder> loadReminderByTaskId (int taskId);
+    abstract LiveData<Reminder> loadReminderByTaskId (int taskId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertReminder(Reminder reminder);
+    abstract void insertReminder(Reminder reminder);
 
     @Update
-    void updateReminder(Reminder reminder);
+    abstract void updateReminder(Reminder reminder);
 
     @Delete
-    void deleteReminder(Reminder reminder);
-}
+    abstract void deleteReminder(Reminder reminder);
 
+    public void insertReminderForTask(TaskEntry task, Reminder reminder){
+        reminder.setTaskId(task.getId());
+        Log.d("AddTask","Reminder in dao "+task.getId());
+        insertReminder(reminder);
+    }
+}

@@ -12,6 +12,7 @@ import com.example.todomvvm.database.Reminder;
 import com.example.todomvvm.database.Repository;
 import com.example.todomvvm.database.TaskEntry;
 
+import java.util.Date;
 import java.util.List;
 
 public class MainViewModel extends AndroidViewModel {
@@ -21,6 +22,7 @@ public class MainViewModel extends AndroidViewModel {
     private LiveData<List<TaskEntry>> task;
     Repository repository;
     private boolean isReminder = false;
+    private Date remindDate;
 
     //constant to track which fragment is displayed
     public static boolean listDisplayFragment = true;
@@ -67,8 +69,8 @@ public class MainViewModel extends AndroidViewModel {
         repository.insertTask(task);
     }
 
-    public void addReminder (Reminder reminder){
-        repository.insertReminder(reminder);
+    public void addReminder (TaskEntry task,Reminder reminder){
+        repository.insertReminder(task,reminder);
     }
 
     public void deleteReminder (Reminder reminder){
@@ -81,5 +83,13 @@ public class MainViewModel extends AndroidViewModel {
 
     public void setReminder(boolean reminder) {
         isReminder = reminder;
+    }
+
+    public Date getRemindDate() {
+        return remindDate;
+    }
+
+    public void setRemindDate(Date remindDate) {
+        this.remindDate = remindDate;
     }
 }

@@ -14,9 +14,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.todomvvm.R;
+import com.example.todomvvm.database.Reminder;
 import com.example.todomvvm.database.TaskEntry;
 import com.example.todomvvm.main.MainActivity;
 
@@ -38,7 +40,10 @@ public class EditTaskFragment extends Fragment {
     // Fields for views
     EditText mEditText;
     RadioGroup mRadioGroup;
-    Button mButton;
+    Button mUpdateButton;
+    Switch mSwitch;
+    TextView mTextView;
+    Button mBackButton;
 
     private int mTaskId;
 
@@ -81,14 +86,27 @@ public class EditTaskFragment extends Fragment {
         if (args != null){
             //get mTaskId from bundle
             mTaskId = args.getInt(ARGS_NAME);
+            Log.d("RijuStart","1. "+mTaskId);
+
+            //set updated taskTd in viewmodel
+            EditTaskViewModel.viewModelTaskId = mTaskId;
+            Log.d("RijuStart","2. View model "+EditTaskViewModel.viewModelTaskId);
             //EditTaskViewModel.mTaskId = mTaskId;
             EditTaskViewModelFactory factory = new EditTaskViewModelFactory(getActivity().getApplication(),mTaskId);
             viewModel = ViewModelProviders.of(this, factory).get(EditTaskViewModel.class);
             viewModel.getTask().observe(getActivity(), new Observer<TaskEntry>() {
                 @Override
-                public void onChanged(TaskEntry taskEntry) {
+                public void onChanged(final TaskEntry taskEntry) {
                     viewModel.getTask().removeObserver(this);
-                    populateUI(taskEntry);
+                    viewModel.getReminder(taskEntry.getId()).observe(getActivity(), new Observer<Reminder>() {
+                        @Override
+                        public void onChanged(Reminder reminder) {
+                            viewModel.getReminder(taskEntry.getId()).removeObserver(this);
+                            populateUI(taskEntry,reminder);
+                            //Log.d(TAG,"TaskID: "+taskEntry.getId()+" ReminderTaskId: "+reminder.getTaskId());
+                        }
+                    });
+
                 }
             });
             Log.d(TAG," onStart viewModel implemented");
@@ -101,12 +119,15 @@ public class EditTaskFragment extends Fragment {
     private void initViews() {
         mEditText = rootView.findViewById(R.id.editTextTaskDescription);
         mRadioGroup = rootView.findViewById(R.id.radioGroup);
+        mSwitch = rootView.findViewById(R.id.reminderSetSwitch);
+        mTextView = rootView.findViewById(R.id.remiderTextView);
+        mBackButton = rootView.findViewById(R.id.backButton);
+        mUpdateButton = rootView.findViewById(R.id.addButton);
 
         //edit
         taskID = rootView.findViewById(R.id.taskID);
 
-        mButton = rootView.findViewById(R.id.updateButton);
-        mButton.setOnClickListener(new View.OnClickListener() {
+        mUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onUpdateButtonClicked();
@@ -136,13 +157,20 @@ public class EditTaskFragment extends Fragment {
      *
      * @param task the taskEntry to populate the UI
      */
-    private void populateUI(TaskEntry task) {
-        if (task == null) {
+    private void populateUI(TaskEntry task, Reminder reminder) {
+        if (task == null && reminder == null) {
             return;
-        } else {
+        }else if (task != null && reminder == null) {
             taskID.setText(task.getId()+"");
             mEditText.setText(task.getDescription());
             setPriorityInViews(task.getPriority());
+        }
+        else {
+            taskID.setText(task.getId()+"");
+            mEditText.setText(task.getDescription());
+            setPriorityInViews(task.getPriority());
+            mSwitch.setChecked(true);
+            mTextView.setText("Reminder Set At"+reminder.getRemindDate().toString());
         }
 
     }

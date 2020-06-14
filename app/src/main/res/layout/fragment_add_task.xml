@@ -1,118 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingEnd="@dimen/activity_horizontal_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingStart="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:layout_height="match_parent">
 
-    <!-- EditText for getttaskEntrytask description input -->
-    <EditText
-        android:id="@+id/editTextTaskDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="start"
-        android:textColor="@color/colorPrimary"
-        android:textColorHint="@color/colorPrimary"
-        android:hint="@string/edit_task_description"
-        android:paddingBottom="@dimen/activity_horizontal_margin"
-        android:backgroundTint="@color/colorPrimary"/>
-
-    <!-- TextView and FrameLayout (which contains buttons) for Priority Selection -->
-    <TextView
-        style="@style/TextAppearance.AppCompat.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/colorPrimary"
-        android:text="@string/priority_string" />
-
-    <!-- RadioGroup for visible selection of a priority -->
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:orientation="horizontal"
-        android:weightSum="3">
-
-        <RadioButton
-            android:id="@+id/radButton1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:buttonTint="@color/materialRed"
-            android:checked="true"
-            android:text="@string/high_priority"
-             />
-
-        <RadioButton
-            android:id="@+id/radButton2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:buttonTint="@color/materialOrange"
-            android:text="@string/med_priority" />
-
-        <RadioButton
-            android:id="@+id/radButton3"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:buttonTint="@color/materialYellow"
-            android:text="@string/low_priority" />
-
-    </RadioGroup>
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        style="@style/task_linear_layout">
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="36dp"
+            android:layout_height="34dp"
+            style="@style/back_button" />
+
+        <!-- EditText for getttaskEntrytask description input -->
+        <EditText
+            android:id="@+id/editTextTaskDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_task_description"
+            style="@style/enter_task" />
+
+        <!-- TextView and FrameLayout (which contains buttons) for Priority Selection -->
         <TextView
-            style="@style/TextAppearance.AppCompat.Medium"
+            style="@style/task_text_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/colorPrimary"
-            android:text="Set Reminder" />
+            android:text="@string/priority_string" />
 
-         <Switch
-             android:id="@+id/reminderSetSwitch"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:paddingLeft="20dp"
-             android:theme="@style/SCBSwitch"/>
+        <!-- RadioGroup for visible selection of a priority -->
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            style="@style/task_radiogroup">
+
+            <RadioButton
+                android:id="@+id/radButton1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/high_priority"
+                style="@style/task_radiobtn_high" />
+
+            <RadioButton
+                android:id="@+id/radButton2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/med_priority"
+                style="@style/task_radiobtn_medium" />
+
+            <RadioButton
+                android:id="@+id/radButton3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/low_priority"
+                style="@style/task_radiobtn_low" />
+
+        </RadioGroup>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                style="@style/task_text_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set Reminder" />
+
+            <Switch
+                android:id="@+id/reminderSetSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/medium_padding"
+                android:theme="@style/SCBSwitch"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/remiderTextView"
+            style="@style/task_text_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reminder :"
+            android:visibility="invisible"/>
+
+        <!-- Add button -->
+        <Button
+            android:id="@+id/addButton"
+            style="@style/task_addupdatebtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_button" />
 
     </LinearLayout>
-    <TextView
-        android:id="@+id/remiderTextView"
-        style="@style/TextAppearance.AppCompat.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/colorPrimary"
-        android:text="Reminder :"
-        android:visibility="invisible"/>
-
-    <!-- Add button -->
-    <Button
-        android:id="@+id/updateButton"
-        style="@style/TextAppearance.AppCompat.Large"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@drawable/round_corner_button"
-        android:text="@string/add_button"
-        android:textColor="@color/colorAccent" />
-
-</LinearLayout>
+</ScrollView>

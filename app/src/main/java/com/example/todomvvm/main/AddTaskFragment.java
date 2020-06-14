@@ -22,6 +22,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.todomvvm.R;
+import com.example.todomvvm.database.Reminder;
 import com.example.todomvvm.database.TaskEntry;
 
 import java.util.Date;
@@ -30,9 +31,6 @@ import java.util.Date;
  * A simple {@link Fragment} subclass.
  */
 public class AddTaskFragment extends Fragment {
-
-    // Constant for default task id to be used when not in update mode
-    private static final int DEFAULT_TASK_ID = -1;
 
     // Constant for logging
     private static final String TAG = AddTaskFragment.class.getSimpleName();
@@ -45,14 +43,10 @@ public class AddTaskFragment extends Fragment {
     // Fields for views
     EditText mEditText;
     RadioGroup mRadioGroup;
-    Button mButton;
+    Button mAddButton;
     Switch mSwitch;
     TextView mTextView;
-
-    //edit
-    TextView taskID;
-
-    private int mTaskId = DEFAULT_TASK_ID;
+    Button mBackButton;
 
     MainViewModel viewModelAdd;
 
@@ -81,13 +75,22 @@ public class AddTaskFragment extends Fragment {
         mRadioGroup = rootView.findViewById(R.id.radioGroup);
         mSwitch = rootView.findViewById(R.id.reminderSetSwitch);
         mTextView = rootView.findViewById(R.id.remiderTextView);
+        mBackButton = rootView.findViewById(R.id.backButton);
+        mAddButton = rootView.findViewById(R.id.addButton);
 
         mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
                     viewModelAdd.setReminder(true);
-
+                    Date date = new Date();
+                    viewModelAdd.setRemindDate(date);
+                    mTextView.setText("Alarm set to "+viewModelAdd.getRemindDate().toString());
+                    mTextView.setVisibility(View.VISIBLE);
+                }else{
+                    viewModelAdd.setReminder(false);
+                    viewModelAdd.setRemindDate(null);
+                    mTextView.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -106,6 +109,7 @@ public class AddTaskFragment extends Fragment {
                     viewModelAdd.setDescription(mEditText.getText().toString());
             }
         });
+
         mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -127,44 +131,55 @@ public class AddTaskFragment extends Fragment {
             }
         });
 
-        mButton = rootView.findViewById(R.id.updateButton);
-        mButton.setOnClickListener(new View.OnClickListener() {
+        mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onSaveButtonClicked();
+                onAddButtonClicked();
+            }
+        });
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetViewModel();
+                replaceFragment();
             }
         });
 
-        Log.d(TAG,"Getting priority from viewmodel : "+viewModelAdd.getPriority());
         setPriorityInViews(viewModelAdd.getPriority(),rootView);
         if (viewModelAdd.getDescription() != null){
             mEditText.setText(viewModelAdd.getDescription());
         }
+
+        if (viewModelAdd.isReminder()){
+            mSwitch.setChecked(true);
+            mTextView.setText("Alarm set to "+viewModelAdd.getRemindDate().toString());
+        }
     }
 
     /**
-     * onSaveButtonClicked is called when the "save" button is clicked.
-     * It retrieves user input and inserts that new task data into the underlying database.
+     * onAddButtonClicked is called when the "Add" button is clicked.
+     * It retrieves user input and inserts that new task data and reminder into the underlying database.
      */
-    public void onSaveButtonClicked() {
+    public void onAddButtonClicked() {
         String description = mEditText.getText().toString();
         int priority = viewModelAdd.getPriority();
         Date date = new Date();
-        final TaskEntry task = new TaskEntry(description, priority, date); //needs to be final to be executed in a different thread
+        TaskEntry task = new TaskEntry(description, priority, date); //needs to be final to be executed in a different thread
         viewModelAdd.addTask(task);
-
-        //replace fragment
-        Fragment fragment = new DisplayFragment();
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.commit();
+        if (viewModelAdd.isReminder()){
+            Log.d(TAG,"Reminder true and added");
+            Reminder reminder = new Reminder(0,viewModelAdd.getRemindDate(),"set"); //instantiate
+            viewModelAdd.addReminder(task,reminder);
+        }
+        resetViewModel();
+        replaceFragment();
     }
 
     /**
      * setPriority is called when we receive a task from MainActivity
      *
      * @param priority the priority value
+     * @param rootView
      */
     public void setPriorityInViews(int priority, View rootView) {
         switch (priority) {
@@ -186,6 +201,30 @@ public class AddTaskFragment extends Fragment {
                 rootView.findViewById(R.id.radButton2).setBackgroundColor(Color.TRANSPARENT);
                 rootView.findViewById(R.id.radButton1).setBackgroundColor(Color.TRANSPARENT);
         }
+    }
+
+    /**
+     * resetViewModel is called to set all the attributes to default
+     *
+     */
+    public void resetViewModel(){
+        viewModelAdd.setDescription(null);
+        viewModelAdd.setPriority(1);
+        viewModelAdd.setReminder(false);
+        viewModelAdd.setRemindDate(null);
+    }
+
+    /**
+     * replaceFragment is called to replace AddFragment to DisplayFragment
+     *
+     */
+    public void replaceFragment(){
+        //replace fragment
+        Fragment fragment = new DisplayFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
     }
 
 }

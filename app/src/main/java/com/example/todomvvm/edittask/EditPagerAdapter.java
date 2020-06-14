@@ -6,11 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.lifecycle.LiveData;
-
-import com.example.todomvvm.database.Repository;
-import com.example.todomvvm.database.TaskDao;
-import com.example.todomvvm.database.TaskEntry;
 
 import java.util.ArrayList;
 import java.util.List;

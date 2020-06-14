@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import com.example.todomvvm.R;
 import com.example.todomvvm.edittask.EditTaskActivity;
 import com.example.todomvvm.database.TaskEntry;
+import com.example.todomvvm.edittask.EditTaskViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -134,6 +135,7 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
         // Launch AddTaskActivity adding the itemId as an extra in the intent
         Intent intent = new Intent(getActivity(), EditTaskActivity.class);
         intent.putExtra(EditTaskActivity.EXTRA_TASK_ID, itemId);
+        EditTaskViewModel.userClick = true;
         startActivity(intent);
     }
 }

@@ -44,20 +44,15 @@ public class EditTaskActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(EXTRA_TASK_ID)) {
-            if (mTaskId == DEFAULT_TASK_ID) {
+            if (EditTaskViewModel.userClick) {
                 // populate the UI
                 mTaskId = intent.getIntExtra(EXTRA_TASK_ID, DEFAULT_TASK_ID);
+                EditTaskViewModel.viewModelTaskId = mTaskId;
+                EditTaskViewModel.userClick = false;
                 Log.d(TAG," get Intent "+mTaskId);
-//                AddEditTaskViewModelFactory factory = new AddEditTaskViewModelFactory(getApplication(),mTaskId);
-//                viewModel = ViewModelProviders.of(this, factory).get(AddEditTaskViewModel.class);
-//                viewModel.getTask().observe(this, new Observer<TaskEntry>() {
-//                    @Override
-//                    public void onChanged(TaskEntry taskEntry) {
-//                        viewModel.getTask().removeObserver(this);
-//                        populateUI(taskEntry);
-//                    }
-//                });
-
+            }else{
+                mTaskId = EditTaskViewModel.viewModelTaskId;
+                Log.d("Rijuedit","3. "+mTaskId);
             }
         }
         mEditPagerAdapter = new EditPagerAdapter(getSupportFragmentManager());
@@ -78,5 +73,21 @@ public class EditTaskActivity extends AppCompatActivity {
             }
         });
         mViewPager.setAdapter(mEditPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                Log.d("Start","4. View Pager "+position);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 }

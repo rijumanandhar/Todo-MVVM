@@ -58,11 +58,11 @@ public class Repository {
     }
 
     //insert
-    public void insertReminder(final Reminder reminder){
+    public void insertReminder(final TaskEntry task,final Reminder reminder){
         AppDatabase.databaseWriteExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                taskDao.insertReminder(reminder);
+                taskDao.insertReminderForTask(task,reminder);
             }
         });
     }
