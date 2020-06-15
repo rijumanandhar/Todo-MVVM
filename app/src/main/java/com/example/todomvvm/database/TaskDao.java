@@ -30,6 +30,9 @@ public abstract class TaskDao {
     @Query("Select * from task where id = :id")
     abstract LiveData<TaskEntry> loadTaskById (int id);
 
+    @Query("Select max(id) from task")
+    abstract LiveData<TaskEntry> loadMaxTaskId ();
+
 //Reminder
 
     @Transaction

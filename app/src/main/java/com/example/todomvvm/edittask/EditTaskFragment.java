@@ -1,8 +1,12 @@
 package com.example.todomvvm.edittask;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -44,6 +48,8 @@ public class EditTaskFragment extends Fragment {
     Switch mSwitch;
     TextView mTextView;
     Button mBackButton;
+
+    Context mContext;
 
     private int mTaskId;
 
@@ -107,6 +113,8 @@ public class EditTaskFragment extends Fragment {
                     }catch (NullPointerException e){
                         populateUI(taskEntry,null);
                     }
+
+
                 }
             });
             Log.d(TAG," onStart viewModel implemented");
@@ -126,6 +134,22 @@ public class EditTaskFragment extends Fragment {
 
         //edit
         taskID = rootView.findViewById(R.id.taskID);
+
+        mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.radButton1:
+                        setPriorityInViews(PRIORITY_HIGH);
+                        break;
+                    case R.id.radButton2:
+                        setPriorityInViews(PRIORITY_MEDIUM);
+                        break;
+                    case R.id.radButton3:
+                        setPriorityInViews(PRIORITY_LOW);
+                }
+            }
+        });
 
         mUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,6 +218,12 @@ public class EditTaskFragment extends Fragment {
         return priority;
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
     /**
      * setPriority is called when we receive a task from MainActivity
      *
@@ -203,12 +233,25 @@ public class EditTaskFragment extends Fragment {
         switch (priority) {
             case PRIORITY_HIGH:
                 ((RadioGroup) rootView.findViewById(R.id.radioGroup)).check(R.id.radButton1);
+                rootView.findViewById(R.id.radButton1).setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight));
+                Log.d("Color","Priority High");
+                rootView.findViewById(R.id.radButton2).setBackgroundColor(Color.TRANSPARENT);
+                rootView.findViewById(R.id.radButton3).setBackgroundColor(Color.TRANSPARENT);
+                //rootView.findViewById(R.id.radButton1).setBackgroundColor(Color.rgb(255,236,221));
                 break;
             case PRIORITY_MEDIUM:
                 ((RadioGroup) rootView.findViewById(R.id.radioGroup)).check(R.id.radButton2);
+                Log.d("Color","Priority Medium");
+                rootView.findViewById(R.id.radButton2).setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                rootView.findViewById(R.id.radButton1).setBackgroundColor(Color.TRANSPARENT);
+                rootView.findViewById(R.id.radButton3).setBackgroundColor(Color.TRANSPARENT);
                 break;
             case PRIORITY_LOW:
                 ((RadioGroup) rootView.findViewById(R.id.radioGroup)).check(R.id.radButton3);
+                Log.d("Color","Priority Low");
+                rootView.findViewById(R.id.radButton3).setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                rootView.findViewById(R.id.radButton2).setBackgroundColor(Color.TRANSPARENT);
+                rootView.findViewById(R.id.radButton1).setBackgroundColor(Color.TRANSPARENT);
         }
     }
 }
