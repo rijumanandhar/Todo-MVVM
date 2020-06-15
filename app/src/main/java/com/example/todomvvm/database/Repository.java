@@ -1,10 +1,18 @@
 package com.example.todomvvm.database;
 
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.todomvvm.main.NotificationAlertReceiver;
+
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class Repository {
 
@@ -17,6 +25,10 @@ public class Repository {
 
     public LiveData<List<TaskEntry>> getAllTask(){
         return taskDao.loadAllTask();
+    }
+
+    public LiveData<Integer> getMaxTaskId(){
+        return taskDao.loadMaxTaskId();
     }
 
     public LiveData<TaskEntry> getTaskById(int id){
@@ -58,11 +70,20 @@ public class Repository {
     }
 
     //insert
-    public void insertReminder(final TaskEntry task,final Reminder reminder){
+    public void insertReminder(final TaskEntry task, final Reminder reminder){
         AppDatabase.databaseWriteExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 taskDao.insertReminderForTask(task,reminder);
+            }
+        });
+    }
+
+    public void insertReminder(final Reminder reminder){
+        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                taskDao.insertReminder(reminder);
             }
         });
     }

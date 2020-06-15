@@ -1,5 +1,8 @@
 package com.example.todomvvm.main;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -20,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.todomvvm.R;
+import com.example.todomvvm.database.Reminder;
 import com.example.todomvvm.edittask.EditTaskActivity;
 import com.example.todomvvm.database.TaskEntry;
 import com.example.todomvvm.edittask.EditTaskViewModel;
@@ -85,7 +89,19 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 // Here is where you'll implement swipe to delete
                 int position = viewHolder.getAdapterPosition();
-                TaskEntry task = mAdapter.getTasks().get(position);
+                final TaskEntry task = mAdapter.getTasks().get(position);
+                viewModel.getReminderById(task.getId()).observe(getActivity(), new Observer<Reminder>() {
+                    @Override
+                    public void onChanged(Reminder reminder) {
+                        viewModel.getReminderById(task.getId()).removeObserver(this);
+                        if (reminder != null){
+                            Log.d(TAG,"Reminder "+reminder.getReminderId());
+                            cancelAlarm(reminder);
+                            viewModel.deleteReminder(reminder);
+                        }
+
+                    }
+                });
                 viewModel.deleteTask(task);
             }
         }).attachToRecyclerView(mRecyclerView);
@@ -139,5 +155,14 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
         intent.putExtra(EditTaskActivity.EXTRA_TASK_ID, itemId);
         EditTaskViewModel.userClick = true;
         startActivity(intent);
+    }
+
+    private void cancelAlarm(Reminder reminder){
+        if (reminder != null){
+            AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(getActivity(), NotificationAlertReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(),reminder.getTaskId(),intent,PendingIntent.FLAG_UPDATE_CURRENT);
+            alarmManager.cancel(pendingIntent);
+        }
     }
 }

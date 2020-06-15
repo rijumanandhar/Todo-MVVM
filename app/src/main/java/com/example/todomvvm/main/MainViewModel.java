@@ -1,6 +1,7 @@
 package com.example.todomvvm.main;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ public class MainViewModel extends AndroidViewModel {
     private int priority = 1;
     private String description;
     private LiveData<List<TaskEntry>> task;
+    private int maxTaskId = 0;
     Repository repository;
     private boolean isReminder = false;
     private Date remindDate;
@@ -38,6 +40,18 @@ public class MainViewModel extends AndroidViewModel {
         Log.d(TAG,"Actively retrieving the tasks from database");
         repository = new Repository(getApplication());
         task = repository.getAllTask();
+    }
+
+    public LiveData<Integer> getMaximumId() {
+        return repository.getMaxTaskId();
+    }
+
+    public int getMaxTaskId() {
+        return maxTaskId;
+    }
+
+    public void setMaxTaskId(int maxTaskId) {
+        this.maxTaskId = maxTaskId;
     }
 
     public LiveData<List<TaskEntry>> getTask(){
@@ -67,10 +81,16 @@ public class MainViewModel extends AndroidViewModel {
 
     public void addTask (TaskEntry task){
         repository.insertTask(task);
+        _showSnackBarEvent.setValue(false);
     }
 
-    public void addReminder (TaskEntry task,Reminder reminder){
+    public void addReminder (TaskEntry task, Reminder reminder){
         repository.insertReminder(task,reminder);
+        _showSnackBarEvent.setValue(false);
+    }
+
+    public LiveData<Reminder> getReminderById(int taskId){
+        return repository.getReminderByTaskId(taskId);
     }
 
     public void deleteReminder (Reminder reminder){

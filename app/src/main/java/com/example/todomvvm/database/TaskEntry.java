@@ -12,7 +12,7 @@ import java.util.Date;
 public class TaskEntry {
 
     // TODO (3) Annotate the id as PrimaryKey. Set autoGenerate to true.
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     private int id;
     private String description;
 

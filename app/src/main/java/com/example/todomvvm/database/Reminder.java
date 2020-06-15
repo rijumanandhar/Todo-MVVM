@@ -9,25 +9,22 @@ import java.util.Date;
 
 @Entity(tableName = "Reminder")
 public class Reminder {
-   @PrimaryKey
+   @PrimaryKey(autoGenerate = true)
    @NonNull
     private int reminderId;
-    private String status;
     private Date remindDate;
     private int taskId;
 
     @Ignore
-    public Reminder(int taskId, Date remindDate, String status){
+    public Reminder(int taskId, Date remindDate){
         this.taskId = taskId;
         this.remindDate = remindDate;
-        this.status = status;
     }
 
-    public Reminder(int reminderId, int taskId, Date remindDate, String status){
+    public Reminder(int reminderId, int taskId, Date remindDate){
         this.reminderId = reminderId;
         this.taskId = taskId;
         this.remindDate = remindDate;
-        this.status = status;
     }
 
     public int getReminderId() {
@@ -36,14 +33,6 @@ public class Reminder {
 
     public void setReminderId(int reminderId) {
         this.reminderId = reminderId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public Date getRemindDate() {

@@ -30,8 +30,11 @@ public abstract class TaskDao {
     @Query("Select * from task where id = :id")
     abstract LiveData<TaskEntry> loadTaskById (int id);
 
+    @Query("Select count(*) from task")
+    abstract LiveData<Integer> countAllTask();
+
     @Query("Select max(id) from task")
-    abstract LiveData<TaskEntry> loadMaxTaskId ();
+    abstract LiveData<Integer> loadMaxTaskId ();
 
 //Reminder
 
@@ -53,7 +56,7 @@ public abstract class TaskDao {
 
     public void insertReminderForTask(TaskEntry task, Reminder reminder){
         reminder.setTaskId(task.getId());
-        Log.d("AddTask","Reminder in dao "+task.getId());
+        //Log.d("AddTask","Reminder in dao "+task.getId());
         insertReminder(reminder);
     }
 }

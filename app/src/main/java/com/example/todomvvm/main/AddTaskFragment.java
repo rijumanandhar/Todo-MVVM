@@ -1,11 +1,19 @@
 package com.example.todomvvm.main;
 
+import android.app.AlarmManager;
+import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.text.Editable;
@@ -16,16 +24,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.example.todomvvm.R;
 import com.example.todomvvm.database.Reminder;
 import com.example.todomvvm.database.TaskEntry;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import static androidx.core.content.ContextCompat.getSystemService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,7 +63,9 @@ public class AddTaskFragment extends Fragment {
     Button mAddButton;
     Switch mSwitch;
     TextView mTextView;
+    TextView mDateView;
     Button mBackButton;
+    Context mContext;
 
     MainViewModel viewModelAdd;
 
@@ -54,6 +73,11 @@ public class AddTaskFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +87,15 @@ public class AddTaskFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_add_task, container, false);
         MainViewModel.listDisplayFragment = false;
         viewModelAdd = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+        viewModelAdd.getMaximumId().observe(getActivity(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                viewModelAdd.getMaximumId().removeObserver(this);
+                if (integer != null){
+                    viewModelAdd.setMaxTaskId(integer);
+                }
+            }
+        });
         initViews(rootView);
         return rootView;
     }
@@ -77,21 +110,33 @@ public class AddTaskFragment extends Fragment {
         mTextView = rootView.findViewById(R.id.remiderTextView);
         mBackButton = rootView.findViewById(R.id.backButton);
         mAddButton = rootView.findViewById(R.id.addButton);
+        mDateView = rootView.findViewById(R.id.remiderDateView);
 
         mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
                     viewModelAdd.setReminder(true);
-                    Date date = new Date();
-                    viewModelAdd.setRemindDate(date);
-                    mTextView.setText("Alarm set to "+viewModelAdd.getRemindDate().toString());
                     mTextView.setVisibility(View.VISIBLE);
+                    mDateView.setVisibility(View.VISIBLE);
+                    selectDate();
+                    if (viewModelAdd.getRemindDate() != null){
+                       updateTimeText(viewModelAdd.getRemindDate());
+                    }
                 }else{
                     viewModelAdd.setReminder(false);
                     viewModelAdd.setRemindDate(null);
                     mTextView.setVisibility(View.INVISIBLE);
+                    mDateView.setVisibility(View.INVISIBLE);
                 }
+            }
+        });
+
+        mDateView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewModelAdd.setReminder(true);
+                selectDate();
             }
         });
 
@@ -121,12 +166,10 @@ public class AddTaskFragment extends Fragment {
                     case R.id.radButton2:
                         viewModelAdd.setPriority(PRIORITY_MEDIUM);
                         setPriorityInViews(PRIORITY_MEDIUM,rootView);
-                        Log.d(TAG,"Priority set to medium : "+viewModelAdd.getPriority());
                         break;
                     case R.id.radButton3:
                         viewModelAdd.setPriority(PRIORITY_LOW);
                         setPriorityInViews(PRIORITY_LOW,rootView);
-                        Log.d(TAG,"Priority set to medium : "+viewModelAdd.getPriority());
                 }
             }
         });
@@ -163,13 +206,15 @@ public class AddTaskFragment extends Fragment {
     public void onAddButtonClicked() {
         String description = mEditText.getText().toString();
         int priority = viewModelAdd.getPriority();
+        int taskID= viewModelAdd.getMaxTaskId()+1;
         Date date = new Date();
-        TaskEntry task = new TaskEntry(description, priority, date); //needs to be final to be executed in a different thread
+        TaskEntry task = new TaskEntry(taskID,description, priority, date); //needs to be final to be executed in a different thread
         viewModelAdd.addTask(task);
         if (viewModelAdd.isReminder()){
-            Log.d(TAG,"Reminder true and added");
-            Reminder reminder = new Reminder(0,viewModelAdd.getRemindDate(),"set"); //instantiate
+            //Log.d(TAG,"Reminder true and added");
+            Reminder reminder = new Reminder(0,viewModelAdd.getRemindDate()); //instantiate
             viewModelAdd.addReminder(task,reminder);
+            startAlarm(reminder,task);
         }
         resetViewModel();
         replaceFragment();
@@ -225,6 +270,68 @@ public class AddTaskFragment extends Fragment {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
+    }
+
+    /**
+     * selectDate to collect user selected date and time
+     *
+     */
+    public void selectDate(){
+        final Calendar newCalender = Calendar.getInstance();
+        DatePickerDialog dialogWithDate = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, final int year, final int month, final int dayOfMonth) {
+
+                final Calendar newDate = Calendar.getInstance();
+                Calendar newTime = Calendar.getInstance();
+                TimePickerDialog time = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+                        newDate.set(year,month,dayOfMonth,hourOfDay,minute,0);
+                        Calendar tem = Calendar.getInstance();
+                        Log.w("TIME",System.currentTimeMillis()+"");
+                        if(newDate.getTimeInMillis()-tem.getTimeInMillis()>0){
+                            viewModelAdd.setRemindDate(newDate.getTime());
+                            updateTimeText(viewModelAdd.getRemindDate());
+                        }
+                        else
+                            Toast.makeText(getActivity(),"Invalid time",Toast.LENGTH_SHORT).show();
+
+                    }
+                },newTime.get(Calendar.HOUR_OF_DAY),newTime.get(Calendar.MINUTE), android.text.format.DateFormat.is24HourFormat(getActivity()));
+                time.show();
+            }
+        },newCalender.get(Calendar.YEAR),newCalender.get(Calendar.MONTH),newCalender.get(Calendar.DAY_OF_MONTH));
+
+        dialogWithDate.getDatePicker().setMinDate(System.currentTimeMillis());
+        dialogWithDate.show();
+    }
+
+    /**
+     * updateTimeText is called to update the textview with selected date
+     *
+     * @param date date selected by the user
+     */
+    public void updateTimeText(Date date){
+        String date_format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm", Locale.ENGLISH).format(date);
+        mDateView.setText(date_format);
+    }
+
+    public void startAlarm(Reminder reminder, TaskEntry task){
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30"));
+        calendar.setTime(reminder.getRemindDate());
+        calendar.set(Calendar.SECOND,0);
+
+        //go to notifier alarm
+        Intent intent = new Intent(getActivity(),NotificationAlertReceiver.class);
+        intent.putExtra("Message",task.getDescription());
+        intent.putExtra("RemindDate",reminder.getRemindDate().toString());
+        intent.putExtra("id",task.getId());
+
+        PendingIntent pendingIn = PendingIntent.getBroadcast(getActivity(),task.getId(),intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIn);
     }
 
 }
