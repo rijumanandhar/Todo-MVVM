@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -19,8 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.todomvvm.R;
 import com.example.todomvvm.database.Reminder;
@@ -45,6 +50,8 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
 
     MainViewModel viewModel;
 
+    private Menu menuList;
+
     public DisplayFragment() {
         // Required empty public constructor
     }
@@ -55,6 +62,7 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_display, container, false);
+        setHasOptionsMenu(true);
 
         MainViewModel.listDisplayFragment = true;
 
@@ -164,5 +172,28 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(),reminder.getTaskId(),intent,PendingIntent.FLAG_UPDATE_CURRENT);
             alarmManager.cancel(pendingIntent);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menuList = menu;
+        inflater.inflate(R.menu.settings_menu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.settings:
+                Toast.makeText(getActivity(),"Item 1 selected ",Toast.LENGTH_LONG).show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void hideMenu()
+    {
+        MenuItem item = menuList.findItem(R.id.viewProfile);
+        item.setVisible(false);
     }
 }

@@ -9,8 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".edittask.EditTaskActivity"></activity>
-        <activity android:name=".main.MainActivity">
+        <activity android:name=".main.MainActivity"></activity>
+        <activity android:name=".edittask.EditTaskActivity" />
+        <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,7 +19,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".main.NotificationAlertReceiver"/>
+        <receiver android:name=".main.NotificationAlertReceiver" />
     </application>
 
 </manifest>

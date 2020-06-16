@@ -19,9 +19,10 @@
         <!-- TextView that displays the description -->
         <TextView
             android:id="@+id/taskDescription"
+            style="@style/task_text_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/task_text_label"
+            android:fontFamily="sans-serif"
             tools:text="Description" />
 
         <!-- TextView that displays the update date -->
