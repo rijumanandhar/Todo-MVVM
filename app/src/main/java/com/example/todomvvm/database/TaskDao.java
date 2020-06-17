@@ -16,7 +16,10 @@ import java.util.List;
 @Dao
 public abstract class TaskDao {
     @Query("Select * from task order by priority")
-    abstract LiveData<List<TaskEntry>> loadAllTask();
+    abstract LiveData<List<TaskEntry>> loadAllTaskByPriority();
+
+    @Query("Select * from task order by updated_at desc")
+    abstract LiveData<List<TaskEntry>> loadAllTaskByDate();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract void insertTask(TaskEntry task);

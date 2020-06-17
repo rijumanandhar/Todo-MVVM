@@ -31,10 +31,8 @@ import com.example.todomvvm.database.Reminder;
 import com.example.todomvvm.edittask.EditTaskActivity;
 import com.example.todomvvm.database.TaskEntry;
 import com.example.todomvvm.edittask.EditTaskViewModel;
-import com.example.todomvvm.loginsignup.LoginSignUpActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -51,11 +49,7 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
 
     MainViewModel viewModel;
 
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-
-    private Menu menuList;
-    private MenuItem loginItem, logoutItem, viewProfileItem,syncItem;
+    private MenuItem priorityItem, dateItem;
 
     public DisplayFragment() {
         // Required empty public constructor
@@ -148,47 +142,47 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
             }
         });
 
-        mAuth = FirebaseAuth.getInstance();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() == null){
-                    Log.d("Truth","1. mAuthListner");
-                    viewModel.setUserLoggedIn(false);
-                    //displayLogOffMenu();
-                }else{
-                    viewModel.setUserLoggedIn(true);
-                    //displayLogInMenu();
-                }
-            }
-        };
+
         return rootView;
     }
 
     private void setupViewModel() {
         viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
-        viewModel.getTask().observe(getActivity(), new Observer<List<TaskEntry>>() {
-            @Override
-            public void onChanged(List<TaskEntry> taskEntries) {
-                Log.d(TAG,"Updating list of tasks from LiveData in ViewModel");
-                mAdapter.setTasks(taskEntries);
-            }
-        });
-    }
+        if (viewModel.isPriorityListDisplay()){
+            viewModel.getTaskByPriority().observe(getActivity(), new Observer<List<TaskEntry>>() {
+                @Override
+                public void onChanged(List<TaskEntry> taskEntries) {
+                    Log.d(TAG,"Updating list of tasks from LiveData in ViewModel");
+                    mAdapter.setTasks(taskEntries);
+                }
+            });
+        }else{
+            viewModel.getTaskByDate().observe(getActivity(), new Observer<List<TaskEntry>>() {
+                @Override
+                public void onChanged(List<TaskEntry> taskEntries) {
+                    Log.d(TAG,"Updating list of tasks from LiveData in ViewModel");
+                    mAdapter.setTasks(taskEntries);
+                }
+            });
+        }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
     public void onItemClickListener(int itemId) {
-        // Launch AddTaskActivity adding the itemId as an extra in the intent
+         //Launch AddTaskActivity adding the itemId as an extra in the intent
         Intent intent = new Intent(getActivity(), EditTaskActivity.class);
         intent.putExtra(EditTaskActivity.EXTRA_TASK_ID, itemId);
         EditTaskViewModel.userClick = true;
         startActivity(intent);
+    }
+
+    @Override
+    public void onItemLongTapListener(String description) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT,description);
+        intent.setType("message/rfc822");
+        startActivity(Intent.createChooser(intent,"Choose an email"));
     }
 
     private void cancelAlarm(Reminder reminder){
@@ -203,68 +197,53 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        Log.d("Truth","3. OnPrepareOptionsMenu");
-        loginItem = menu.findItem(R.id.login);
-        logoutItem = menu.findItem(R.id.logout);
-        viewProfileItem = menu.findItem(R.id.viewProfile);
-        syncItem = menu.findItem(R.id.sync);
-        if (viewModel.isUserLoggedIn()){
-            displayLogInMenu();
+        priorityItem = menu.findItem(R.id.priorityMenuItem);
+        dateItem = menu.findItem(R.id.dateMenuItem);
+        if (viewModel.isPriorityListDisplay()){
+            displayDateMenu();
         }else{
-            displayLogOffMenu();
+            displayPriorityMenu();
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Log.d("Truth","2. MenuInflater");
-        inflater.inflate(R.menu.settings_menu, menu);
+        inflater.inflate(R.menu.sort_menu, menu);
         super.onCreateOptionsMenu(menu,inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            case R.id.login:
-                goToLoginSignUpActivity();
+            case R.id.priorityMenuItem:
+                viewModel.setPriorityListDisplay(true);
+                refreshFragment();
                 return true;
-            case R.id.viewProfile:
-                goToViewProfileActivity();
-            case R.id.logout:
-                logout();
+            case R.id.dateMenuItem:
+                viewModel.setPriorityListDisplay(false);
+                refreshFragment();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void displayLogOffMenu()
+    private void displayPriorityMenu()
     {
-        logoutItem.setVisible(false);
-        syncItem.setVisible(false);
-        viewProfileItem.setVisible(false);
-        loginItem.setVisible(true);
+        dateItem.setVisible(false);
+        priorityItem.setVisible(true);
     }
 
-    private void displayLogInMenu(){
-        viewProfileItem.setVisible(true);
-        logoutItem.setVisible(true);
-        syncItem.setVisible(true);
-        loginItem.setVisible(false);
+    private void displayDateMenu(){
+        priorityItem.setVisible(false);
+        dateItem.setVisible(true);
     }
 
-    public void goToLoginSignUpActivity(){
-        Intent loginRegisterIntent = new Intent(getActivity(), LoginSignUpActivity.class);
-        loginRegisterIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(loginRegisterIntent );
-    }
-
-    public void goToViewProfileActivity(){
-        Intent profileIntent = new Intent(getActivity(), ViewProfileActivity.class);
-        startActivity(profileIntent );
-    }
-
-    public void logout(){
-        mAuth.signOut();
-        viewModel.setUserLoggedIn(false);
-        displayLogOffMenu();
+    private void refreshFragment(){
+        //replace fragment
+        Fragment fragment = new DisplayFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
     }
 }

@@ -51,7 +51,7 @@ public class EditTaskViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<TaskEntry>> getAllTasks(){
-        return repository.getAllTask();
+        return repository.getAllTaskByPriority();
     }
 
     public LiveData<Reminder> getReminder(int id){

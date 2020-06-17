@@ -1,6 +1,4 @@
 apply plugin: 'com.android.application'
-//google firebase
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
@@ -41,30 +39,5 @@ dependencies {
     // Lifecycle components
     implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.archLifecycleVersion"
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$rootProject.archLifecycleVersion"
-
-    //SDK for realtime database
-    implementation 'com.google.firebase:firebase-database:19.3.0'
-
-    //authentication
-    implementation 'com.google.firebase:firebase-auth:19.3.1'
-
-    //google sign in
-    implementation 'com.google.android.gms:play-services-auth:18.0.0'
-
-    //firebase ui
-    implementation 'com.firebaseui:firebase-ui:0.4.3'
-
-    //firebase storage
-    implementation 'com.google.firebase:firebase-storage:19.1.1'
-
-    //picasso
-    implementation 'com.squareup.picasso:picasso:2.5.2'
-
-    //image cropper
-    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
-
-    //picasso library
-    implementation 'com.squareup.picasso:picasso:2.71828'
-
 
 }

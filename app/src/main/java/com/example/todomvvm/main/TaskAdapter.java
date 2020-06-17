@@ -135,10 +135,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     public interface ItemClickListener {
         void onItemClickListener(int itemId);
+        void onItemLongTapListener(String description);
     }
 
     // Inner class for creating ViewHolders
-    class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class TaskViewHolder extends RecyclerView.ViewHolder{
 
         // Class variables for the task description and priority TextViews
         TextView taskDescriptionView;
@@ -156,13 +157,21 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             taskDescriptionView = itemView.findViewById(R.id.taskDescription);
             updatedAtView = itemView.findViewById(R.id.taskUpdatedAt);
             priorityView = itemView.findViewById(R.id.priorityTextView);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            int elementId = mTaskEntries.get(getAdapterPosition()).getId();
-            mItemClickListener.onItemClickListener(elementId);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int elementId = mTaskEntries.get(getAdapterPosition()).getId();
+                    mItemClickListener.onItemClickListener(elementId);
+                }
+            });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    String description  = mTaskEntries.get(getAdapterPosition()).getDescription();
+                    mItemClickListener.onItemLongTapListener(description);
+                    return false;
+                }
+            });
         }
     }
 }

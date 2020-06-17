@@ -1,7 +1,6 @@
 package com.example.todomvvm.main;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -25,7 +24,7 @@ public class MainViewModel extends AndroidViewModel {
     Repository repository;
     private boolean isReminder = false;
     private Date remindDate;
-    private boolean userLoggedIn = false;
+    private boolean priorityListDisplay = true;
 
     //constant to track which fragment is displayed
     public static boolean listDisplayFragment = true;
@@ -40,7 +39,7 @@ public class MainViewModel extends AndroidViewModel {
         super(application);
         Log.d(TAG,"Actively retrieving the tasks from database");
         repository = new Repository(getApplication());
-        task = repository.getAllTask();
+        task = repository.getAllTaskByPriority();
     }
 
     public LiveData<Integer> getMaximumId() {
@@ -55,8 +54,12 @@ public class MainViewModel extends AndroidViewModel {
         this.maxTaskId = maxTaskId;
     }
 
-    public LiveData<List<TaskEntry>> getTask(){
+    public LiveData<List<TaskEntry>> getTaskByPriority(){
         return task;
+    }
+
+    public LiveData<List<TaskEntry>> getTaskByDate(){
+        return repository.getAllTaskByDate();
     }
 
     public void deleteTask(TaskEntry task){
@@ -114,11 +117,11 @@ public class MainViewModel extends AndroidViewModel {
         this.remindDate = remindDate;
     }
 
-    public boolean isUserLoggedIn() {
-        return userLoggedIn;
+    public boolean isPriorityListDisplay() {
+        return priorityListDisplay;
     }
 
-    public void setUserLoggedIn(boolean userLoggedIn) {
-        this.userLoggedIn = userLoggedIn;
+    public void setPriorityListDisplay(boolean priorityListDisplay) {
+        this.priorityListDisplay = priorityListDisplay;
     }
 }

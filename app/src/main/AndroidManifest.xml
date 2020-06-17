@@ -9,8 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ViewProfile.ViewProfileActivity"></activity>
-        <activity android:name=".loginsignup.LoginSignUpActivity" />
         <activity android:name=".main.MainActivity" />
         <activity android:name=".edittask.EditTaskActivity" />
         <activity android:name=".SplashScreenActivity">
