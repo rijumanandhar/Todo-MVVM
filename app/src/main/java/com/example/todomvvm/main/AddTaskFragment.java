@@ -210,7 +210,7 @@ public class AddTaskFragment extends Fragment {
         Date date = new Date();
         TaskEntry task = new TaskEntry(taskID,description, priority, date); //needs to be final to be executed in a different thread
         viewModelAdd.addTask(task);
-        if (viewModelAdd.isReminder()){
+        if (viewModelAdd.isReminder()&&viewModelAdd.getRemindDate()!=null){
             //Log.d(TAG,"Reminder true and added");
             Reminder reminder = new Reminder(0,viewModelAdd.getRemindDate()); //instantiate
             viewModelAdd.addReminder(task,reminder);

@@ -25,6 +25,7 @@ public class MainViewModel extends AndroidViewModel {
     Repository repository;
     private boolean isReminder = false;
     private Date remindDate;
+    private boolean userLoggedIn = false;
 
     //constant to track which fragment is displayed
     public static boolean listDisplayFragment = true;
@@ -111,5 +112,13 @@ public class MainViewModel extends AndroidViewModel {
 
     public void setRemindDate(Date remindDate) {
         this.remindDate = remindDate;
+    }
+
+    public boolean isUserLoggedIn() {
+        return userLoggedIn;
+    }
+
+    public void setUserLoggedIn(boolean userLoggedIn) {
+        this.userLoggedIn = userLoggedIn;
     }
 }

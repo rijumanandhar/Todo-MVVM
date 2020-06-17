@@ -25,15 +25,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.todomvvm.R;
 import com.example.todomvvm.database.Reminder;
 import com.example.todomvvm.edittask.EditTaskActivity;
 import com.example.todomvvm.database.TaskEntry;
 import com.example.todomvvm.edittask.EditTaskViewModel;
+import com.example.todomvvm.loginsignup.LoginSignUpActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -50,7 +51,11 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
 
     MainViewModel viewModel;
 
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
     private Menu menuList;
+    private MenuItem loginItem, logoutItem, viewProfileItem,syncItem;
 
     public DisplayFragment() {
         // Required empty public constructor
@@ -142,6 +147,21 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
                 }
             }
         });
+
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() == null){
+                    Log.d("Truth","1. mAuthListner");
+                    viewModel.setUserLoggedIn(false);
+                    //displayLogOffMenu();
+                }else{
+                    viewModel.setUserLoggedIn(true);
+                    //displayLogInMenu();
+                }
+            }
+        };
         return rootView;
     }
 
@@ -154,6 +174,12 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
                 mAdapter.setTasks(taskEntries);
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
@@ -175,8 +201,23 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
     }
 
     @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        Log.d("Truth","3. OnPrepareOptionsMenu");
+        loginItem = menu.findItem(R.id.login);
+        logoutItem = menu.findItem(R.id.logout);
+        viewProfileItem = menu.findItem(R.id.viewProfile);
+        syncItem = menu.findItem(R.id.sync);
+        if (viewModel.isUserLoggedIn()){
+            displayLogInMenu();
+        }else{
+            displayLogOffMenu();
+        }
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menuList = menu;
+        Log.d("Truth","2. MenuInflater");
         inflater.inflate(R.menu.settings_menu, menu);
         super.onCreateOptionsMenu(menu,inflater);
     }
@@ -184,16 +225,46 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            case R.id.settings:
-                Toast.makeText(getActivity(),"Item 1 selected ",Toast.LENGTH_LONG).show();
+            case R.id.login:
+                goToLoginSignUpActivity();
                 return true;
+            case R.id.viewProfile:
+                goToViewProfileActivity();
+            case R.id.logout:
+                logout();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void hideMenu()
+    private void displayLogOffMenu()
     {
-        MenuItem item = menuList.findItem(R.id.viewProfile);
-        item.setVisible(false);
+        logoutItem.setVisible(false);
+        syncItem.setVisible(false);
+        viewProfileItem.setVisible(false);
+        loginItem.setVisible(true);
+    }
+
+    private void displayLogInMenu(){
+        viewProfileItem.setVisible(true);
+        logoutItem.setVisible(true);
+        syncItem.setVisible(true);
+        loginItem.setVisible(false);
+    }
+
+    public void goToLoginSignUpActivity(){
+        Intent loginRegisterIntent = new Intent(getActivity(), LoginSignUpActivity.class);
+        loginRegisterIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(loginRegisterIntent );
+    }
+
+    public void goToViewProfileActivity(){
+        Intent profileIntent = new Intent(getActivity(), ViewProfileActivity.class);
+        startActivity(profileIntent );
+    }
+
+    public void logout(){
+        mAuth.signOut();
+        viewModel.setUserLoggedIn(false);
+        displayLogOffMenu();
     }
 }
