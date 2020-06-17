@@ -58,9 +58,9 @@ public class EditTaskFragment extends Fragment {
     EditText mEditText;
     RadioGroup mRadioGroup;
     Button mUpdateButton;
-    Switch mSwitch;
     TextView mTextView;
     TextView mDateView;
+    TextView mCancelView;
     Button mBackButton;
 
     Context mContext;
@@ -84,7 +84,6 @@ public class EditTaskFragment extends Fragment {
         args.putInt(ARGS_NAME, mTaskId);
         EditTaskFragment fragment = new EditTaskFragment();
         fragment.setArguments(args);
-        Log.d(TAG," Fragment Instance created with "+mTaskId);
         return  fragment;
     }
 
@@ -105,7 +104,6 @@ public class EditTaskFragment extends Fragment {
         if (args != null){
             //get mTaskId from bundle
             mTaskId = args.getInt(ARGS_NAME);
-            Log.d("Hallelujah", "1. onStart ");
 
             EditTaskViewModelFactory factory = new EditTaskViewModelFactory(getActivity().getApplication(),mTaskId);
             viewModel = ViewModelProviders.of(this, factory).get(EditTaskViewModel.class);
@@ -114,7 +112,6 @@ public class EditTaskFragment extends Fragment {
                 public void onChanged(final TaskEntry taskEntry) {
                     viewModel.getTask().removeObserver(this);
                     populateTaskUI(taskEntry);
-                    Log.d("Hallelujah", "2. Populate UI of task, reminder might be empty "+taskEntry.getId()+" " +taskEntry.getDescription());
                 }
             });
 
@@ -124,8 +121,6 @@ public class EditTaskFragment extends Fragment {
                     if (reminder != null){
                         viewModel.setReminderId(reminder.getReminderId());
                         populateReminderUI(reminder);
-                        Log.d("Hallelujah", "" +
-                                "3. Populate UI of reminder"+reminder.getTaskId());
                     }
                 }
             });
@@ -150,11 +145,12 @@ public class EditTaskFragment extends Fragment {
         if (reminder == null){
             return;
         }else{
-            Log.d("Hallelujah", "4. Inside populate UI reminder, reminder bool is set to true "+reminder.getTaskId());
-            viewModel.setReminderBool(true);
-            mSwitch.setChecked(true);
-            mTextView.setVisibility(View.VISIBLE);
-            updateTimeText(reminder.getRemindDate());
+            if (viewModel.getUpdateDate()!=null){
+                updateTimeText(viewModel.getUpdateDate());
+            }else{
+                updateTimeText(reminder.getRemindDate());
+            }
+            mCancelView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -164,7 +160,7 @@ public class EditTaskFragment extends Fragment {
     private void initViews() {
         mEditText = rootView.findViewById(R.id.editTextTaskDescription);
         mRadioGroup = rootView.findViewById(R.id.radioGroup);
-        mSwitch = rootView.findViewById(R.id.reminderSetSwitch);
+        mCancelView = rootView.findViewById(R.id.remiderCancelTextView);
         mTextView = rootView.findViewById(R.id.remiderTextView);
         mBackButton = rootView.findViewById(R.id.backButton);
         mUpdateButton = rootView.findViewById(R.id.addButton);
@@ -177,29 +173,15 @@ public class EditTaskFragment extends Fragment {
             }
         });
 
-        mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mCancelView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    Log.d("Hallelujah", "5. onCheckedChanged: "+viewModel.isReminder());
-                    if (viewModel.isReminder()){
-                        Log.d("Hallelujah", "6. viewReminder is true");
-                        if(viewModel.getUpdateDate()!=null){
-                            Log.d("Hallelujah", "7. update date is not null");
-                            updateTimeText(viewModel.getUpdateDate());
-                        }
-                    }else{
-                        Log.d("Hallelujah", "8. viewReminder is false");
-                        mTextView.setVisibility(View.VISIBLE);
-                        mDateView.setVisibility(View.VISIBLE);
-                    }
-                }else{
-                    Log.d("Hallelujah", "9. onCheckedChanged: "+viewModel.isReminder());
-                    viewModel.setReminderBool(false);
+            public void onClick(View v) {
+                viewModel.setReminderBool(false);
+                if (viewModel.getUpdateDate()!=null){
                     viewModel.setUpdateDate(null);
-                    mTextView.setVisibility(View.INVISIBLE);
-                    mDateView.setVisibility(View.INVISIBLE);
                 }
+                mDateView.setText("00:00");
+                mCancelView.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -208,6 +190,7 @@ public class EditTaskFragment extends Fragment {
             public void onClick(View v) {
                 viewModel.setReminderBool(true);
                 selectDate();
+                mCancelView.setVisibility(View.VISIBLE);
             }
         });
 
@@ -261,6 +244,7 @@ public class EditTaskFragment extends Fragment {
             updateTimeText(viewModel.getUpdateDate());
         }else if (viewModel.getReminderId() != 0 && viewModel.getUpdateDate()==null && !viewModel.isReminder()){
             cancelAlarm(task);
+            viewModel.deleteReminderById(viewModel.getReminderId());
         }
         resetViewModel();
         replaceView();

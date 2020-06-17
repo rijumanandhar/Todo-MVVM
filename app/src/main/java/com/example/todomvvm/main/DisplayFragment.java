@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
@@ -137,7 +138,11 @@ public class DisplayFragment extends Fragment implements TaskAdapter.ItemClickLi
             @Override
             public void onChanged(Boolean  showSnackBar) {
                 if (showSnackBar == true){
-                    Snackbar.make(fabButton, "Deleted",Snackbar.LENGTH_LONG).show();
+                    Snackbar snackbar;
+                    snackbar = Snackbar.make(fabButton, "Deleted", Snackbar.LENGTH_LONG);
+                    View snackBarView = snackbar.getView();
+                    snackBarView.setBackgroundColor(Color.BLACK);
+                    snackbar.show();
                 }
             }
         });

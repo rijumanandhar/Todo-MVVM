@@ -109,4 +109,13 @@ public class Repository {
         return taskDao.loadTaskAndReminder();
     }
 
+    public void deleteReminderById(final int id){
+        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                taskDao.deleteReminderById(id);
+            }
+        });
+    }
+
 }

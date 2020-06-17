@@ -61,24 +61,6 @@
 
         </RadioGroup>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                style="@style/task_text_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Set Reminder" />
-
-            <Switch
-                android:id="@+id/reminderSetSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/medium_padding"
-                android:theme="@style/SCBSwitch"/>
-
-        </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,8 +71,7 @@
             style="@style/task_text_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reminder set at: "
-            android:visibility="invisible"/>
+            android:text="Reminder set at: " />
 
         <TextView
             android:id="@+id/remiderDateView"
@@ -100,10 +81,14 @@
             android:paddingLeft="@dimen/medium_padding"
             android:textColor="@color/colorAccent"
             android:text="00:00"
-            android:visibility="invisible"
            />
-
     </LinearLayout>
+        <TextView
+            android:id="@+id/remiderCancelTextView"
+            style="@style/task_text_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click to remove" />
 
         <!-- Add button -->
         <Button

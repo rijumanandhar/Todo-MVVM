@@ -57,6 +57,9 @@ public abstract class TaskDao {
     @Delete
     abstract void deleteReminder(Reminder reminder);
 
+    @Query("Delete from Reminder where reminderId = :id")
+    abstract void deleteReminderById(int id);
+
     public void insertReminderForTask(TaskEntry task, Reminder reminder){
         reminder.setTaskId(task.getId());
         //Log.d("AddTask","Reminder in dao "+task.getId());

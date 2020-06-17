@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- colors for general appearance -->
     <color name="colorPrimary">#0D4D90</color>
     <color name="colorPrimaryDark">#303F9F</color>
@@ -11,5 +11,7 @@
     <color name="materialRed">#F82C19</color>
     <color name="materialOrange">#F88E83</color>
     <color name="materialYellow">#F8BAB4</color>
+
+    <color name="design_snackbar_background_color" tools:override="true">@color/colorPrimary</color>
 
 </resources>

@@ -12,7 +12,6 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColorPrimary">@color/colorPrimary</item>
-        <item name="android:background">@android:color/white</item>
     </style>
 
     <!-- Style for custom white radio button color -->
@@ -102,4 +101,5 @@
         <item name="fontFamily">sans-serif</item>
         <item name="android:textColor">@color/colorAccent</item>
     </style>
+
 </resources>
