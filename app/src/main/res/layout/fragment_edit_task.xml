@@ -16,18 +16,6 @@
             android:layout_height="34dp"
             style="@style/back_button" />
 
-        <!-- TextView and FrameLayout (which contains buttons) for Task ID -->
-        <TextView
-            style="@style/TextAppearance.AppCompat.Medium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Task ID"
-            android:textColor="@android:color/primary_text_light"
-            android:id="@+id/taskID"/>
-
         <!-- EditText for getttaskEntrytask description input -->
         <EditText
             android:id="@+id/editTextTaskDescription"

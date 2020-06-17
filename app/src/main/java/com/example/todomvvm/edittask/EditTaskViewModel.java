@@ -59,9 +59,11 @@ public class EditTaskViewModel extends AndroidViewModel {
     }
 
     public boolean isReminder() {
+        Log.d("Hallelujah", "isReminder returned from viewModel "+isReminder);
         return isReminder;
     }
     public void setReminderBool(boolean reminder) {
+        Log.d("Hallelujah", "isReminder set to viewModel "+reminder);
         isReminder = reminder;
     }
 

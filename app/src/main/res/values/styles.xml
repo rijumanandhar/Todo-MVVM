@@ -54,6 +54,7 @@
         <item name="android:gravity">start</item>
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textColorHint">@color/colorPrimary</item>
+        <item name="fontFamily">sans-serif-light</item>
         <item name="android:paddingBottom">@dimen/activity_horizontal_margin</item>
         <item name="android:backgroundTint">@color/colorPrimary</item>
     </style>
@@ -61,7 +62,14 @@
     <style name="task_text_label" parent="TextAppearance.AppCompat.Medium">
         <item name="android:layout_gravity">start</item>
         <item name="android:layout_marginBottom">8dp</item>
+        <item name="fontFamily">sans-serif-light</item>
         <item name="android:layout_marginTop">8dp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="display_text_label" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:layout_gravity">start</item>
+        <item name="fontFamily">sans-serif-light</item>
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
@@ -91,16 +99,7 @@
     <style name="task_addupdatebtn" parent="TextAppearance.AppCompat.Large">
         <item name="android:layout_gravity">center</item>
         <item name="android:background">@drawable/round_corner_button</item>
+        <item name="fontFamily">sans-serif</item>
         <item name="android:textColor">@color/colorAccent</item>
-    </style>
-
-    <style name="profileInfoLabel">
-        <item name="android:textSize">21sp</item>
-    </style>
-
-    <style name="profileInfoText">
-        <item name="android:textSize">20sp</item>
-        <item name="android:padding">10dp</item>
-        <item name="android:layout_marginLeft">10dp</item>
     </style>
 </resources>
