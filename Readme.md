@@ -11,33 +11,31 @@ Simple to-do app that allows user to generate and view a list of  errands and o
 
 ## Features
 
-![]()
-![](device-addtask.png)
-![](device-addtask2.png)
+<img src="device-addtask.png" width="300" height="590">
+<img src="device-addtask2.png" width="300" height="590">
+
 * Add task with priority
 
-![](device-selectdate.png)
-![](device-selecttime.png)
-![](device-setReminder.png)
+<img src="device-selectdate.png" width="300" height="590">
+<img src="device-selecttime.png" width="300" height="590">
+<img src="device-setReminder.png" width="300" height="590">
+
 * Set time and date for task reminder
 
-![](device-viewtask.png)
-![](device-sort.png)
+<img src="device-viewtask.png" width="300" height="590">
+<img src="device-sort.png" width="300" height="590">
+
 * View task, sort by priority or recent date
 
-![](device-swipe.png)
+<img src="device-swipe.png" width="300" height="590">
+
 * Swipe in any direction to delete a task
 
-![](device-update.png)
+<img src="device-update.png" width="300" height="590">
+
 * Click on any item to update it
+* Swipe left and right to view previous/next item
 
-![](device-share.png)
+<img src="device-share.png" width="300" height="590">
+
 * Long tap on any item to share the content via email
-
-
-
-
-
-
-
-
